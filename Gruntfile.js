@@ -2,7 +2,7 @@
 
 module.exports = function ( grunt ) {
 
-  grunt.registerTask('build', ['jshint', 'clean:build', 'copy:build']);
+  grunt.registerTask('build', ['clean:build', 'copy:build']);
   grunt.registerTask('test', ['build']);
   grunt.registerTask('test:dev', ['build']);
   grunt.registerTask('package', ['clean:package', 'copy:package',
