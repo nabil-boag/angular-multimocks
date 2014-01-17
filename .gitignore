@@ -1,0 +1,10 @@
+/app/build/
+/app/package/
+/app/src/bower_components/*
+/nbproject/*
+/node_modules/*
+/coverage
+.DS_Store
+.idea/
+*~
+
