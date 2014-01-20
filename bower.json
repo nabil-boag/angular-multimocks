@@ -2,12 +2,11 @@
   "name": "tempo-scenario-mocks",
   "devDependencies": {
     "angular-mocks": "~1.2.0",
-    "angular-scenario": "~1.2.0"
+    "angular-ui-router": "0.2.0",
   },
   "dependencies": {
     "angular": "~1.2.0",
     "angular-resource": "~1.2.0",
-    "angular-ui-router": "0.2.0",
     "angular-ui-utils": "~0.0.4",
     "lodash": "*"
   }
