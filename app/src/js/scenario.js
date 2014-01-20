@@ -104,7 +104,6 @@ angular.module('scenario', ['ui.router'])
 
           // Mocks found for scenario in query string.
           if (scenario !== null) {
-            console.log('Setting mocks for scenario: ' + scenarioRequired);
 
             // Set mock for each item.
             _.forOwn(scenario, function (mock, key, object) {
