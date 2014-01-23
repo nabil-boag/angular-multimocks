@@ -48,29 +48,34 @@ angular.module('scenario', ['ui.router'])
       };
     }
   ])
-  .run(function (scenarioMocks, scenarioMockData) {
-    // Only set a default scenario if one is not about to be set manually.
-    if (window.location.hash.indexOf('scenario') === -1) {
-    }
-    /* jshint ignore:start */
-    var getParameterByName = function (name) {
-      name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-      var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-          results = regex.exec(window.location.search);
-      return results === null ? "" :
-        decodeURIComponent(results[1].replace(/\+/g, " "));
-    };
-    /* jshint ignore:end */
+
+  .run([
+    'scenarioMocks',
+    'scenarioMockData',
+    function (scenarioMocks, scenarioMockData) {
+      // Only set a default scenario if one is not about to be set manually.
+      if (window.location.hash.indexOf('scenario') === -1) {
+      }
+      /* jshint ignore:start */
+      var getParameterByName = function (name) {
+        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(window.location.search);
+        return results === null ? "" :
+          decodeURIComponent(results[1].replace(/\+/g, " "));
+      };
+      /* jshint ignore:end */
 
 
-    // Load a scenario based on URL string.
-    // i.e. dev.ivy.com/?scenario=scenario1#/dashboard
-    if (getParameterByName('scenario')) {
-      scenarioMocks.setup(getParameterByName('scenario'));
-    } else {
-      scenarioMocks.setup(scenarioMockData.getDefaultScenario());
+      // Load a scenario based on URL string.
+      // i.e. dev.ivy.com/?scenario=scenario1#/dashboard
+      if (getParameterByName('scenario')) {
+        scenarioMocks.setup(getParameterByName('scenario'));
+      } else {
+        scenarioMocks.setup(scenarioMockData.getDefaultScenario());
+      }
     }
-  })
+  ])
 
   .factory('scenarioMocks', [
     '$http',
