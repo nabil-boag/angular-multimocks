@@ -5,8 +5,8 @@ module.exports = function (grunt) {
       path = require('path'),
       fs = require('fs');
 
-  var moduleDir = path.dirname(module.filename),
-      defaultTemplatePath = path.join(moduleDir, 'scenarioData.tpl'),
+  var pwd = path.dirname(module.filename),
+      defaultTemplatePath = path.join(pwd, 'scenarioData.tpl'),
       mockManifestFilename = 'mockResources.json';
 
   /**
@@ -51,10 +51,10 @@ module.exports = function (grunt) {
    * scenarioMockDataProvider.setMockData will understand.
    */
   var readMockManifest = function (baseURL, mockDir) {
-    var mockManifest = path.join(process.cwd(), mockDir, mockManifestFilename);
+    var mockManifest = path.join(process.cwd(), mockDir, mockManifestFilename),
         mocks = require(mockManifest),
-        defaultScenario = readScenario(baseURL, mockDir, [],
-          mocks._default, '_default');
+        defaultScenario = readScenario(baseURL, mockDir, [], mocks._default,
+          '_default');
 
     return _.mapValues(mocks, function (filenames, scenarioName) {
       return readScenario(baseURL, mockDir, defaultScenario, filenames,
