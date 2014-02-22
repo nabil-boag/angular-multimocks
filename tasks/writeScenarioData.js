@@ -11,8 +11,6 @@ module.exports = function (grunt) {
 
   /**
    * Merge 2 scenarios together.
-   *
-   * TODO remove duplicates
    */
   var mergeScenarios = function (s1, s2) {
     var all = s2.concat(s1);
