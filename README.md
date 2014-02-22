@@ -24,7 +24,7 @@ files for various versions of the response.
     │   └── _default.json
     └── mockResources.json
 
-A resource might look like this:
+A resource file might look like this:
 
     {
       "httpMethod": "GET",
@@ -57,8 +57,8 @@ the default versions of the `Root` and `MobilePhone` resources, but overrides
 
 ## Grunt Task
 
-Tempo Scenario defines a grunt task called `scenarios`, which will compile
-resources into an Angular module definition. Add the Grunt task to your build
+Tempo Scenario defines a Grunt task called `scenarios`, which will compile
+resources into an AngularJS module definition. Add the Grunt task to your build
 and make the module a depedency in your app to enable scenarios.
 
 Install the module using npm:
@@ -74,12 +74,17 @@ Add it to your Grunt configuration:
     scenarios: {
       myApp: {
         src: 'mocks',
-        dest: 'build/scenarioData.js',
+        dest: 'build/scenarios.js',
         baseURL: 'http://myapi.com/'
       }
     },
 
+Once the task is run, `build/scenarios.js` will define a module called
+`scenarios` which you can add to your app as a dependency:
+
+    angular.module('myApp', ['scenario'])
+
 ## `scenarioMockDataProvider`
 
 Tempo Scenario also declares a provider, `scenarioMockDataProvider`, which
-allows you to set mock data by passing an object.
+allows you to set mock data by passing an object to the `setMockData` method.
