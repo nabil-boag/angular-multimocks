@@ -55,6 +55,16 @@ The example above defines 2 scenarios `_default` and `loggedIn`. `loggedIn` has
 the default versions of the `Root` and `MobilePhone` resources, but overrides
 `Account`, using the version in `Account/loggedIn.json`.
 
+## Bower Component
+
+Tempo Scenario should be added to your app as a Bower component:
+
+    bower install --save http://tempo-components.s3.amazonaws.com/tempo-scenario/dev/tempo-scenario-dev.tar
+
+Include `tempo-scenario.js` or `tempo-scenario.min.js` in your application:
+
+    <script src="bower_components/tempo-scenario/js/tempo-scenario.js"></script>
+
 ## Grunt Task
 
 Tempo Scenario defines a Grunt task called `scenarios`, which will compile
@@ -63,7 +73,7 @@ and make the module a depedency in your app to enable scenarios.
 
 Install the module using npm:
 
-    npm install QuickbridgeLtd/tempo-scenario --save-dev
+    npm install --save-dev QuickbridgeLtd/tempo-scenario
 
 Add it to your Grunt configuration:
 
@@ -80,7 +90,7 @@ Add it to your Grunt configuration:
     },
 
 Once the task is run, `build/scenarios.js` will be generated containing all your
-mock data. Simply include that in your app:
+mock data. Include that in your app:
 
     <script src="build/scenarios.js"></script>
 
