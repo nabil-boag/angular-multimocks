@@ -79,10 +79,10 @@ Add it to your Grunt configuration:
       }
     },
 
-Once the task is run, `build/scenarios.js` will define a module called
-`scenarios` which you can add to your app as a dependency:
+Once the task is run, `build/scenarios.js` will be generated containing all your
+mock data. Simply include that in your app:
 
-    angular.module('myApp', ['scenario'])
+    <script src="build/scenarios.js"></script>
 
 ## `scenarioMockDataProvider`
 

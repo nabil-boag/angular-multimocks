@@ -1,7 +1,7 @@
 /* global angular */
 
 angular
-  .module('scenarios')
+  .module('scenario')
 
   .config(['scenarioMockDataProvider', function (scenarioMockDataProvider) {
     scenarioMockDataProvider.setDefaultScenario('_default');
