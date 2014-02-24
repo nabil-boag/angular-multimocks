@@ -30,7 +30,7 @@ module.exports = function (grunt) {
       scenarioName) {
     // read mock data files for this scenario
     var scenario = filenames.map(function (filename) {
-      var filepath = path.join(mockDir, filename),
+      var filepath = fs.realpathSync(path.join(mockDir, filename)),
           resource = require(filepath);
 
       // rel name is the directory name of the file
