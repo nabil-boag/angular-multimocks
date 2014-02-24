@@ -85,7 +85,8 @@ Add it to your Grunt configuration:
       myApp: {
         src: 'mocks',
         dest: 'build/scenarios.js',
-        baseURL: 'http://myapi.com/'
+        baseURL: 'http://myapi.com/',
+        template: 'myTemplate.tpl' // optional
       }
     },
 

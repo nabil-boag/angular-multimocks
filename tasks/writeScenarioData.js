@@ -12,9 +12,14 @@ module.exports = function (grunt) {
   /**
    * Merge 2 scenarios together.
    */
-  var mergeScenarios = function (s1, s2) {
-    var all = s2.concat(s1);
-    return _.uniq(all, function (resource) { return resource.rel; });
+  var mergeScenarios = function (parentScenario, childScenario) {
+    var all = childScenario.concat(parentScenario);
+
+    // remove parent scenario resource which provide same resource as child
+    // scenario
+    return _.uniq(all, function (resource) {
+      return resource.rel + resource.httpMethod;
+    });
   };
 
   /**
@@ -23,10 +28,15 @@ module.exports = function (grunt) {
    */
   var readScenario = function (baseURL, mockDir, defaultScenario, filenames,
       scenarioName) {
+    // read mock data files for this scenario
     var scenario = filenames.map(function (filename) {
       var filepath = path.join(mockDir, filename),
-          resource = JSON.parse(fs.readFileSync(filepath));
+          resource = require(filepath);
+
+      // rel name is the directory name of the file
       resource.rel = filename.split('/')[0];
+
+      // add URIs for resources
       if (resource.rel === 'Root') {
         resource.uri = baseURL;
       }
@@ -36,6 +46,7 @@ module.exports = function (grunt) {
       return resource;
     });
 
+    // if not default scenario, merge in default resources
     if (scenarioName === '_default') {
       return scenario;
     }
@@ -50,10 +61,16 @@ module.exports = function (grunt) {
    */
   var readMockManifest = function (baseURL, mockDir) {
     var mockManifest = path.join(process.cwd(), mockDir, mockManifestFilename),
+
+        // read manifest JSON by require'ing it
         mocks = require(mockManifest),
+
+        // read files for default scenario first, so we can merge it into other
+        // scenarios later
         defaultScenario = readScenario(baseURL, mockDir, [], mocks._default,
           '_default');
 
+    // read files for each scenario
     return _.mapValues(mocks, function (filenames, scenarioName) {
       return readScenario(baseURL, mockDir, defaultScenario, filenames,
         scenarioName);
@@ -64,31 +81,33 @@ module.exports = function (grunt) {
    * Generate a list of all available links in all scenarios.
    */
   var generateAvailableLinks = function (scenarioData) {
-    var linkBatches = _.map(scenarioData, function (scenario) {
-      return _.object(_.map(scenario, function (res) {
+    var scenarioLinks = _.map(scenarioData, function (scenario) {
+      return _.object(_.map(scenario, function (resource) {
+        // return key-value array for _.object
         return [
-          res.rel,
+          resource.rel,
           {
-            rel: res.rel,
-            href: res.uri,
-            method: res.httpMethod
+            rel: resource.rel,
+            href: resource.uri,
+            method: resource.httpMethod
           }
         ];
       }));
     });
-    return _.reduce(linkBatches, _.merge, {});
+    var allTheLinks = _.reduce(scenarioLinks, _.merge, {});
+    return allTheLinks;
   };
 
   /**
    * Add response._links to all resources in a scenario.
    */
   var scenarioWithLinks = function (links, scenario) {
-    return _.map(scenario, function (res) {
-      var newRes = _.cloneDeep(res);
-      if (newRes.response) {
-        newRes.response._links = links;
+    return _.map(scenario, function (resource) {
+      var resourceClone = _.cloneDeep(resource);
+      if (resourceClone.response) {
+        resourceClone.response._links = links;
       }
-      return newRes;
+      return resourceClone;
     });
   };
 
@@ -105,12 +124,16 @@ module.exports = function (grunt) {
   /**
    * Return JSON string of all scenario data.
    */
-  var generateScenarioData = function (baseURL, mockDir) {
+  var readScenarioData = function (baseURL, mockDir) {
     var data = readMockManifest(baseURL, mockDir),
         dataWithLinks = scenarioDataWithLinks(data);
     return JSON.stringify(dataWithLinks, null, '  ').replace(/\n/g, '\n    ');
   };
 
+  /**
+   * Read mock manifest and JSON files and compile into single scenarioData.js
+   * file.
+   */
   var writeScenarioData = function () {
     this.files.forEach(function (f) {
       grunt.verbose.writeln('src: ' + f.src);
@@ -120,9 +143,15 @@ module.exports = function (grunt) {
 
       var mockDir = f.src[0], // TODO handle multiple dirs by merging manifests?
           templatePath = f.template || defaultTemplatePath,
-          templateString = fs.readFileSync(templatePath),
-          scenarioData = generateScenarioData(f.baseURL, mockDir),
-          output = _.template(templateString, {scenarioData: scenarioData});
+          templateString = fs.readFileSync(templatePath);
+
+      // read mock manifest and load data for each scenario
+      var scenarioData = readScenarioData(f.baseURL, mockDir);
+
+      // generate scenarioData.js contents by inserting data into template
+      var output = _.template(templateString, {scenarioData: scenarioData});
+
+      // write scenarioData.js to file
       fs.writeFileSync(f.dest, output);
     });
   };
