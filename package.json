@@ -1,6 +1,10 @@
 {
   "name": "tempo-scenario",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/QuickbridgeLtd/tempo-scenario"
+  },
   "dependencies": {
     "lodash": "~2.4.1",
     "sha1": "~1.1.0"
