@@ -105,6 +105,9 @@ module.exports = function (grunt) {
     return _.map(scenario, function (resource) {
       var resourceClone = _.cloneDeep(resource);
       if (resourceClone.response) {
+        if (resourceClone.linksWhitelist) {
+          links = _.pick(links, resourceClone.linksWhitelist);
+        }
         resourceClone.response._links = links;
       }
       return resourceClone;
