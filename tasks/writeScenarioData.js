@@ -105,10 +105,12 @@ module.exports = function (grunt) {
     return _.map(scenario, function (resource) {
       var resourceClone = _.cloneDeep(resource);
       if (resourceClone.response) {
-        if (resourceClone.linksWhitelist) {
-          links = _.pick(links, resourceClone.linksWhitelist);
+        if (resourceClone.relNames) {
+          resourceClone.response._links = _.pick(links, resourceClone.relNames);
         }
-        resourceClone.response._links = links;
+        else {
+          resourceClone.response._links = links;
+        }
       }
       return resourceClone;
     });
