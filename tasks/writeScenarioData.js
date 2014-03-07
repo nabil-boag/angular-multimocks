@@ -132,7 +132,7 @@ module.exports = function (grunt) {
   var readScenarioData = function (baseURL, mockDir) {
     var data = readMockManifest(baseURL, mockDir),
         dataWithLinks = scenarioDataWithLinks(data);
-    return JSON.stringify(dataWithLinks, null, '  ').replace(/\n/g, '\n    ');
+    return JSON.stringify(dataWithLinks);
   };
 
   /**
