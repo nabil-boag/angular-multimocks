@@ -1,5 +1,5 @@
 Tempo Scenario
---------------
+==============
 
 Tools for managing mock data scenarios in AngularJS applications.
 
@@ -9,7 +9,8 @@ define these using JSON files and a manifest.
 Tempo Scenario also allows you to switch between scenarios by adding
 `?scenario=name` to the application URL.
 
-## Mock Format
+Mock Format
+-----------
 
 Mocks are organised into directories representing the available resources and
 files for various versions of the response.
@@ -55,17 +56,23 @@ The example above defines 2 scenarios `_default` and `loggedIn`. `loggedIn` has
 the default versions of the `Root` and `MobilePhone` resources, but overrides
 `Account`, using the version in `Account/loggedIn.json`.
 
-## Bower Component
+Bower Component
+---------------
 
-Tempo Scenario should be added to your app as a Bower component:
+Add Tempo Scenario to your project with Bower:
 
-    bower install --save http://tempo-components.s3.amazonaws.com/tempo-scenario/dev/tempo-scenario-dev.tar
+    bower install --save http://tempo-components.s3.amazonaws.com/tempo-scenario/dev/tempo-scenario-v0.2.0.tar
+
+Or npm:
+
+    npm install --save http://wonga-node-modules.s3.amazonaws.com/tempo-scenario/tempo-scenario-v0.2.0.tar.gz
 
 Include `tempo-scenario.js` or `tempo-scenario.min.js` in your application:
 
-    <script src="bower_components/tempo-scenario/js/tempo-scenario.js"></script>
+    <script src="bower_components/tempo-scenario/js/tempo-scenario.min.js"></script>
 
-## Grunt Task
+Grunt Task
+----------
 
 Tempo Scenario defines a Grunt task called `scenarios`, which will compile
 resources into an AngularJS module definition. Add the Grunt task to your build
@@ -95,7 +102,8 @@ mock data. Include that in your app:
 
     <script src="build/scenarios.js"></script>
 
-## `scenarioMockDataProvider`
+`scenarioMockDataProvider`
+--------------------------
 
 Tempo Scenario also declares a provider, `scenarioMockDataProvider`, which
 allows you to set mock data by passing an object to the `setMockData` method.

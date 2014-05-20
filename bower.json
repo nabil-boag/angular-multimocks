@@ -1,13 +1,23 @@
 {
-  "name": "tempo-scenario-mocks",
+  "name": "tempo-scenario",
+  "version": "0.2.0",
+  "authors": [
+    {
+      "name": "Ben Godfrey",
+      "email": "ben.godfrey@wonga.com"
+    }
+  ],
+  "description": "Tools for managing mock data scenarios in AngularJS applications",
+  "main": "js/tempo-scenario.min.js",
+  "private": true,
   "devDependencies": {
-    "angular-mocks": "~1.2.0",
-    "angular-ui-router": "0.2.0"
+    "angular-mocks": "~1.2.0"
   },
   "dependencies": {
     "angular": "~1.2.0",
     "angular-resource": "~1.2.0",
     "angular-ui-utils": "~0.0.4",
+    "angular-ui-router": "0.2.0",
     "lodash": "*"
   }
 }

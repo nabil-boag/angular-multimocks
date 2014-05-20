@@ -1,160 +1,158 @@
-/* global getParameterByName, angular, _, console, setTimeout, location, window
- */
-angular.module('scenario', ['ui.router'])
+/* global angular, _, console */
 
-  .config(['$stateProvider', function config($stateProvider) {
-    $stateProvider.state('scenario', {
-        url: '/scenario/:state/:mock',
-        controller: 'ScenarioController'
-      });
-  }])
+angular
+  .module('scenario', ['ui.router'])
 
-  .controller('ScenarioController', [
-    'scenarioMocks',
-    '$state',
-    '$stateParams',
-    function (scenarioMocks, $state, $stateParams) {
-      if (!_.isUndefined($stateParams.mock)) {
-        scenarioMocks.setup($stateParams.mock).then(
-          function () {
-            if (!_.isUndefined($stateParams.state)) {
-              $state.transitionTo($stateParams.state);
-            }
-          });
-      }
-    }
-  ])
+  .provider('scenarioMockData', function () {
+    var mockData = {},
+      defaultScenario = '_default';
 
-  .provider('scenarioMockData', [function () {
-      var mockData = {};
-      var defaultScenario;
-      this.setMockData = function (data) {
-        mockData = data;
-      };
+    this.setMockData = function (data) {
+      mockData = data;
+    };
 
-      this.setDefaultScenario = function (scenario) {
-        defaultScenario = scenario;
-      };
+    this.addMockData = function (name, data) {
+      mockData[name] = data;
+    };
 
-      this.$get = function () {
-        return {
-          getMockData: function () {
-            return mockData;
-          },
-          getDefaultScenario: function () {
-            return defaultScenario;
-          }
-        };
-      };
-    }
-  ])
+    this.setDefaultScenario = function (scenario) {
+      defaultScenario = scenario;
+    };
 
-  .run([
-    'scenarioMocks',
-    'scenarioMockData',
-    function (scenarioMocks, scenarioMockData) {
-      // Only set a default scenario if one is not about to be set manually.
-      if (window.location.hash.indexOf('scenario') === -1) {
-      }
-      /* jshint ignore:start */
-      var getParameterByName = function (name) {
-        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-            results = regex.exec(window.location.search);
-        return results === null ? "" :
-          decodeURIComponent(results[1].replace(/\+/g, " "));
-      };
-      /* jshint ignore:end */
-
-
-      // Load a scenario based on URL string.
-      // i.e. dev.ivy.com/?scenario=scenario1#/dashboard
-      if (getParameterByName('scenario')) {
-        scenarioMocks.setup(getParameterByName('scenario'));
-      } else {
-        scenarioMocks.setup(scenarioMockData.getDefaultScenario());
-      }
-    }
-  ])
-
-  .factory('scenarioMocks', [
-    '$http',
-    '$q',
-    '$httpBackend',
-    'scenarioMockData',
-    function ($http, $q, $httpBackend, scenarioMockData) {
-
-      var scenarioMocks = {
-
-        setup : function (scenarioRequired) {
-          var deferred = $q.defer();
-          this.implementMocks(scenarioRequired, deferred);
-          return deferred.promise;
+    this.$get = function $get() {
+      return {
+        getMockData: function () {
+          return mockData;
         },
-
-        implementMocks : function (scenarioRequired, deferred) {
-
-          var mockData = scenarioMockData.getMockData();
-
-          var waitForResponse = false;
-
-          // Look for mocks for this scenario.
-          var scenario = _.has(mockData, scenarioRequired) ?
-            mockData[scenarioRequired] : null;
-
-          // Mock Headers.
-          var mockHeaders = {
-            'Content-Type': 'application/vnd.wonga.rest+json; charset=utf-8'
-          };
-
-          // Mocks found for scenario in query string.
-          if (scenario !== null) {
-
-            // Set mock for each item.
-            _.forOwn(scenario, function (mock, key, object) {
-              // Check for conditional request data.
-              var data = _.has(mock, 'requestData') ?
-                mock.requestData : undefined;
-
-              // Mock a polling resource.
-              if (typeof mock.poll !== 'undefined' && mock.poll) {
-                var pollCounter = 0;
-
-                // Respond with a 204 which will then get polled until a 200 is
-                // returned.
-                $httpBackend.when(mock.httpMethod, mock.uri, data)
-                  .respond(function () {
-                    var pollCount = _.has(mock, 'pollCount') ?
-                      mock.pollCount : 2;
-                   // Call a certain amount of times to simulate polling.
-                    if (pollCounter < pollCount) {
-                      pollCounter++;
-                      return [204, {}, mockHeaders];
-                    }
-                    return [200, mock.response, mockHeaders];
-                  });
-              } else {
-                $httpBackend.when(mock.httpMethod, mock.uri, data)
-                  .respond(mock.statusCode, mock.response, mockHeaders);
-              }
-              // Make this http request now if required.
-              if (typeof mock.callInSetup !== 'undefined' && mock.callInSetup) {
-                waitForResponse = true;
-                $http({method: mock.httpMethod, url: mock.uri}).success(
-                  function (response) {
-                    deferred.resolve();
-                  }
-                );
-              }
-            });
-          } else {
-            console.log('Mocks not found for: ' + scenarioRequired);
-          }
-          if (!waitForResponse) {
-            deferred.resolve();
-          }
+        getDefaultScenario: function () {
+          return defaultScenario;
         }
       };
-      return scenarioMocks;
+    };
+  })
+
+  .factory('scenarioMocks', [
+    '$q',
+    '$http',
+    '$httpBackend',
+    'scenarioMockData',
+    function ($q, $http, $httpBackend, scenarioMockData) {
+      var setupHttpBackendForMockResource = function (deferred, mock) {
+        var mockHeaders = {
+          'Content-Type': 'application/vnd.wonga.rest+json; charset=utf-8'
+        };
+
+        // Mock a polling resource.
+        if (mock.poll) {
+          var pollCounter = 0,
+              pollCount = _.has(mock, 'pollCount') ? mock.pollCount : 2;
+
+          // Respond with a 204 which will then get polled until a 200 is
+          // returned.
+          $httpBackend
+            .when(mock.httpMethod, mock.uri, mock.requestData)
+            .respond(function () {
+             // Call a certain amount of times to simulate polling.
+              if (pollCounter < pollCount) {
+                pollCounter++;
+                return [204, {}, mockHeaders];
+              }
+              return [200, mock.response, mockHeaders];
+            });
+        } else {
+          $httpBackend
+            .when(mock.httpMethod, mock.uri, mock.requestData)
+            .respond(mock.statusCode, mock.response, mockHeaders);
+        }
+
+        // Make this http request now if required otherwise just resolve
+        if (mock.callInSetup) {
+          var req = {method: mock.httpMethod, url: mock.uri};
+          $http(req).success(function (response) {
+            deferred.resolve();
+          });
+        }
+        else {
+          deferred.resolve();
+        }
+      };
+
+      return {
+        setup: function (scenarioName) {
+          var deferred = $q.defer(),
+            actualScenarioName = scenarioName ||
+              scenarioMockData.getDefaultScenario(),
+            mockData = scenarioMockData.getMockData();
+
+          if (_.has(mockData, actualScenarioName)) {
+            var scenario = mockData[actualScenarioName];
+
+            // Set mock for each item.
+            _.forOwn(scenario, function (mock) {
+              setupHttpBackendForMockResource(deferred, mock);
+            });
+          }
+          else if (scenarioName) {
+            // only write to console if scenario actively specified
+            console.log('Mocks not found for: ' + scenarioName);
+          }
+
+          return deferred.promise;
+        }
+      };
+    }
+  ])
+
+  .config([
+    '$stateProvider',
+    function ($stateProvider) {
+      $stateProvider.state('scenario', {
+        url: '/scenario/:state/:mock',
+        controller: 'scenarioController'
+      });
+    }
+  ])
+
+  .controller('scenarioController', [
+    '$state',
+    '$stateParams',
+    'scenarioMocks',
+    function ($state, $stateParams, scenarioMocks) {
+      if (!_.isUndefined($stateParams.mock)) {
+        scenarioMocks.setup($stateParams.mock).then(function () {
+          if (!_.isUndefined($stateParams.state)) {
+            $state.transitionTo($stateParams.state);
+          }
+        });
+      }
+    }
+  ])
+
+  .factory('scenarioName', function () {
+    return {
+      extract: function (search) {
+        if (search.indexOf('scenario') !== -1) {
+          var scenarioParams = search
+            .slice(1)
+            .split('&')
+            .map(function (s) { return s.split('='); })
+            .filter(function (kv) { return kv[0] === 'scenario'; });
+          return scenarioParams[0][1];
+        }
+        else {
+          return undefined;
+        }
+      }
+    };
+  })
+
+  .run([
+    '$window',
+    'scenarioMocks',
+    'scenarioName',
+    function ($window, scenarioMocks, scenarioName) {
+      // load a scenario based on URL string,
+      // e.g. http://example.com/?scenario=scenario1
+      scenarioMocks.setup(scenarioName.extract($window.location.search));
     }
   ]);

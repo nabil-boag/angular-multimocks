@@ -1,42 +1,84 @@
 <!DOCTYPE html>
-<html xmlns:ng="http://angularjs.org">
-<head>
-  <title>Tempo Scenario</title>
-  <meta charset="utf-8" />
+<html ng-app="demo">
+  <head>
+    <meta charset="utf-8">
+    <title>Tempo Scenario</title>
+  </head>
 
-</head>
-<body ng-app="demo">
-  <div>
-    <h1>Demo of the Scenario builder</h1>
-   <div ng-app="demo" ng-controller="demoCtrl">
-     <pre>{{ values | json }}</pre>
+  <body ng-controller="demoCtrl">
+    <div>
+      <h1>Tempo Scenario Demo</h1>
+
+      <p>
+        <pre>{{data | json}}</pre>
+      </p>
+
+      <ul>
+        <li><a href="?scenario=scenario1">scenario1</a></li>
+        <li><a href="?scenario=scenario2">scenario2</a></li>
+      </ul>
     </div>
-  </div>
-  <script src="bower_components/lodash/dist/lodash.js"></script>
-  <script src="bower_components/angular/angular.js"></script>
-  <script src="bower_components/angular-mocks/angular-mocks.js"></script>
-  <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
 
-  <!-- build:js(app/build) js/tempo-scenario.min.js -->
-  <script src="js/scenario.js"></script>
-  <!-- endbuild -->
-<script src="js/scenarioData.js"></script>
-  <script>
-  var app = angular.module('demo', ['scenario', 'ngMockE2E'])
-        /**
-         * Configure UI Router.
-         */
+    <script src="bower_components/lodash/dist/lodash.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-mocks/angular-mocks.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="js/tempo-scenario.js"></script>
+
+    <script>
+      // configure scenario data
+      angular
+        .module('scenario')
+        .config([
+          'scenarioMockDataProvider',
+          function (scenarioMockDataProvider) {
+            scenarioMockDataProvider.setMockData(
+              {
+                'scenario1':
+                  [
+                    {
+                      'uri': 'http://example.com/test',
+                      'httpMethod': 'GET',
+                      'statusCode': 200,
+                      'response': {
+                        'scenario': 'one',
+                      }
+
+                    }
+                  ],
+                  'scenario2':
+                  [
+                    {
+                      'uri': 'http://example.com/test',
+                      'httpMethod': 'GET',
+                      'statusCode': 200,
+                      'response': {
+                        'scenario': 'two',
+                      }
+                    }
+                  ]
+                }
+            );
+            scenarioMockDataProvider.setDefaultScenario('scenario1');
+          }
+        ]);
+
+      // simple app which makes a request and displays the results in the
+      // template
+      angular
+        .module('demo', ['scenario', 'ngMockE2E'])
         .config(['$stateProvider', function ($stateProvider) {
           $stateProvider.state('demo', {
             url: '/demo',
             controller: 'demoCtrl',
           });
         }])
-       .controller('demoCtrl', ['$scope', '$http',
-        function ($scope, $http) {
+        .controller('demoCtrl', ['$scope', '$http', function ($scope, $http) {
           $scope.values = {};
-          $http.get('test.com/test').then(function (response) {
-            $scope.values.response = response;
+          $http.get('http://example.com/test').then(function (response) {
+            $scope.data = response.data;
           });
         }]);
- </script>
+   </script>
+ </body>
+</html>
