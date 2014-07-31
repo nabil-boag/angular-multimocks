@@ -1,4 +1,5 @@
 /* global angular */
+/* jshint ignore:start */
 
 angular
   .module('scenario')
@@ -7,3 +8,4 @@ angular
     scenarioMockDataProvider.setDefaultScenario('_default');
     scenarioMockDataProvider.setMockData(<%= scenarioData %>);
   }]);
+/* jshint ignore:end */
