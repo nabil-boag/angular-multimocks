@@ -102,6 +102,33 @@ mock data. Include that in your app:
 
     <script src="build/scenarios.js"></script>
 
+If the generated `build/scenarios.js` is too large, running it on mobile devices might cause memory issues.
+
+You can choose to build multiple files, one for each scenario by specifying 
+`multipleFiles: true` and `dest` as a directory instead of it being a `.js` file.    
+Your Grunt configuration should look something like:
+
+    // load the task
+    grunt.loadNpmTasks('tempo-scenario');
+
+    // configuration for scenarios
+    scenarios: {
+      myApp: {
+        src: 'mocks',
+        dest: 'build/scenarios',
+        multipleFiles: true,
+        baseURL: 'http://myapi.com/',
+        template: 'myTemplate.tpl' // optional
+      }
+    },
+
+Once the task is run, a list of scenario files e.g. 
+`build/scenarios/_default.js` will be generated containing specific mock data. 
+Include all those generated mock files in your app:
+
+    <script src="build/scenarios/_default.js"></script>
+
+
 `scenarioMockDataProvider`
 --------------------------
 
