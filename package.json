@@ -1,6 +1,6 @@
 {
   "name": "angular-scenario",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Tools for managing mock data scenarios in AngularJS applications",
   "repository": {
     "type": "git",
