@@ -39,7 +39,7 @@ angular
     function ($q, $http, $httpBackend, scenarioMockData) {
       var setupHttpBackendForMockResource = function (deferred, mock) {
         var mockHeaders = {
-          'Content-Type': 'application/vnd.wonga.rest+json; charset=utf-8'
+          'Content-Type': 'application/hal+json; charset=utf-8'
         };
 
         // Mock a polling resource.
