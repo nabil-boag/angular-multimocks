@@ -1,12 +1,12 @@
-Tempo Scenario
-==============
+Angular Scenario
+================
 
 Tools for managing mock data scenarios in AngularJS applications.
 
-Scenarios are collections of HTTP responses. Tempo Scenario allows you to
+Scenarios are collections of HTTP responses. Angular Scenario allows you to
 define these using JSON files and a manifest.
 
-Tempo Scenario also allows you to switch between scenarios by adding
+Angular Scenario also allows you to switch between scenarios by adding
 `?scenario=name` to the application URL.
 
 Mock Format
@@ -19,8 +19,8 @@ files for various versions of the response.
     ├── Account
     │   ├── loggedIn.json
     │   └── anonymous.json
-    ├── MobilePhone
-    │   ├── _default.json
+    ├── Orders
+    │   └── _default.json
     ├── Root
     │   └── _default.json
     └── mockResources.json
@@ -42,7 +42,7 @@ describes which version of each resource should be used for each scenario.
       "_default": [
         "Root/_default.json",
         "Account/anonymous.json",
-        "MobilePhone/_default.json"
+        "Orders/_default.json"
       ],
       "loggedIn": [
         "Account/loggedIn.json"
@@ -53,46 +53,46 @@ All scenarios inherit resources defined in `_default` unless they provide an
 override. Think of `_default` as the base class for scenarios.
 
 The example above defines 2 scenarios `_default` and `loggedIn`. `loggedIn` has
-the default versions of the `Root` and `MobilePhone` resources, but overrides
+the default versions of the `Root` and `Orders` resources, but overrides
 `Account`, using the version in `Account/loggedIn.json`.
 
 Bower Component
 ---------------
 
-Add Tempo Scenario to your project with Bower:
+Add Angular Scenario to your project with Bower:
 
-    bower install --save http://tempo-components.s3.amazonaws.com/tempo-scenario/dev/tempo-scenario-v0.2.0.tar
+    bower install --save http://tempo-components.s3.amazonaws.com/angular-scenario/dev/angular-scenario-v0.2.0.tar
 
 Or npm:
 
-    npm install --save http://wonga-node-modules.s3.amazonaws.com/tempo-scenario/tempo-scenario-v0.2.0.tar.gz
+    npm install --save http://wonga-node-modules.s3.amazonaws.com/angular-scenario/angular-scenario-v0.2.0.tar.gz
 
-Include `tempo-scenario.js` or `tempo-scenario.min.js` in your application:
+Include `angular-scenario.js` or `angular-scenario.min.js` in your application:
 
-    <script src="bower_components/tempo-scenario/js/tempo-scenario.min.js"></script>
+    <script src="bower_components/angular-scenario/js/angular-scenario.min.js"></script>
 
 Grunt Task
 ----------
 
-Tempo Scenario defines a Grunt task called `scenarios`, which will compile
+Angular Scenario defines a Grunt task called `scenarios`, which will compile
 resources into an AngularJS module definition. Add the Grunt task to your build
 and make the module a depedency in your app to enable scenarios.
 
 Install the module using npm:
 
-    npm install --save-dev QuickbridgeLtd/tempo-scenario
+    npm install --save-dev wongatech/angular-scenario
 
 Add it to your Grunt configuration:
 
     // load the task
-    grunt.loadNpmTasks('tempo-scenario');
+    grunt.loadNpmTasks('angular-scenario');
 
     // configuration for scenarios
     scenarios: {
       myApp: {
         src: 'mocks',
         dest: 'build/scenarios.js',
-        baseURL: 'http://myapi.com/',
+        baseURL: 'http://api.example.com/',
         template: 'myTemplate.tpl' // optional
       }
     },
@@ -104,12 +104,12 @@ mock data. Include that in your app:
 
 If the generated `build/scenarios.js` is too large, running it on mobile devices might cause memory issues.
 
-You can choose to build multiple files, one for each scenario by specifying 
-`multipleFiles: true` and `dest` as a directory instead of it being a `.js` file.    
+You can choose to build multiple files, one for each scenario by specifying
+`multipleFiles: true` and `dest` as a directory instead of it being a `.js` file.
 Your Grunt configuration should look something like:
 
     // load the task
-    grunt.loadNpmTasks('tempo-scenario');
+    grunt.loadNpmTasks('angular-scenario');
 
     // configuration for scenarios
     scenarios: {
@@ -117,20 +117,19 @@ Your Grunt configuration should look something like:
         src: 'mocks',
         dest: 'build/scenarios',
         multipleFiles: true,
-        baseURL: 'http://myapi.com/',
+        baseURL: 'http://api.example.com/',
         template: 'myTemplate.tpl' // optional
       }
     },
 
-Once the task is run, a list of scenario files e.g. 
-`build/scenarios/_default.js` will be generated containing specific mock data. 
+Once the task is run, a list of scenario files e.g.
+`build/scenarios/_default.js` will be generated containing specific mock data.
 Include all those generated mock files in your app:
 
     <script src="build/scenarios/_default.js"></script>
 
-
 `scenarioMockDataProvider`
 --------------------------
 
-Tempo Scenario also declares a provider, `scenarioMockDataProvider`, which
+Angular Scenario also declares a provider, `scenarioMockDataProvider`, which
 allows you to set mock data by passing an object to the `setMockData` method.

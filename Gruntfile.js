@@ -43,7 +43,7 @@ module.exports = function (grunt) {
     env: grunt.option('env') || 'dev',
 
     app: {
-      name: 'tempo-scenario',
+      name: 'angular-scenario',
       source_dir: 'app/src',
       build_dir: 'app/build',
       package_dir: 'app/package'

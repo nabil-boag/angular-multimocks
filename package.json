@@ -1,13 +1,10 @@
 {
-  "name": "tempo-scenario",
+  "name": "angular-scenario",
   "version": "0.2.0",
+  "description": "Tools for managing mock data scenarios in AngularJS applications",
   "repository": {
     "type": "git",
-    "url": "git://github.com/QuickbridgeLtd/tempo-scenario"
-  },
-  "author": {
-    "name": "Ben Godfrey",
-    "email": "ben.godfrey@wonga.com"
+    "url": "git://github.com/wongatech/tempo-scenario"
   },
   "dependencies": {
     "lodash": "~2.4.1"
