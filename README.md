@@ -1,13 +1,14 @@
 Angular Scenario
 ================
 
-Tools for managing mock data scenarios in AngularJS applications.
+Angular Scenario lets you test how your app behaves with different responses from an API.
 
-Scenarios are collections of HTTP responses. Angular Scenario allows you to
-define these using JSON files and a manifest.
+A scenario is a set of mock HTTP responses from an API. A developer of an e-commerce app could configure scenarios for a new customer, one who is registered and one who has an order outstanding.
 
-Angular Scenario also allows you to switch between scenarios by adding
-`?scenario=name` to the application URL.
+Angular Scenario allows you to define scenarios as simple JSON files and to switch between scenarios by adding
+`?scenario=name` to the page URL.
+
+You can use Angular Scenario to quickly test your app works in all situations while developing or to provide mock data for a suite of automated acceptance tests.
 
 Mock Format
 -----------
