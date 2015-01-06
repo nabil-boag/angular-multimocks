@@ -3,7 +3,7 @@
 angular
   .module('scenario', ['ui.router'])
 
-  .provider('scenarioMockData', function () {
+  .provider('multimocksData', function () {
     var mockData = {},
       defaultScenario = '_default';
 
@@ -31,12 +31,12 @@ angular
     };
   })
 
-  .factory('scenarioMocks', [
+  .factory('multimocks', [
     '$q',
     '$http',
     '$httpBackend',
-    'scenarioMockData',
-    function ($q, $http, $httpBackend, scenarioMockData) {
+    'multimocksData',
+    function ($q, $http, $httpBackend, multimocksData) {
       var setupHttpBackendForMockResource = function (deferred, mock) {
         var mockHeaders = {
           'Content-Type': 'application/hal+json; charset=utf-8'
@@ -81,8 +81,8 @@ angular
         setup: function (scenarioName) {
           var deferred = $q.defer(),
             actualScenarioName = scenarioName ||
-              scenarioMockData.getDefaultScenario(),
-            mockData = scenarioMockData.getMockData();
+              multimocksData.getDefaultScenario(),
+            mockData = multimocksData.getMockData();
 
           if (_.has(mockData, actualScenarioName)) {
             var scenario = mockData[actualScenarioName];
@@ -116,10 +116,10 @@ angular
   .controller('scenarioController', [
     '$state',
     '$stateParams',
-    'scenarioMocks',
-    function ($state, $stateParams, scenarioMocks) {
+    'multimocks',
+    function ($state, $stateParams, multimocks) {
       if (!_.isUndefined($stateParams.mock)) {
-        scenarioMocks.setup($stateParams.mock).then(function () {
+        multimocks.setup($stateParams.mock).then(function () {
           if (!_.isUndefined($stateParams.state)) {
             $state.transitionTo($stateParams.state);
           }
@@ -148,11 +148,11 @@ angular
 
   .run([
     '$window',
-    'scenarioMocks',
+    'multimocks',
     'scenarioName',
-    function ($window, scenarioMocks, scenarioName) {
+    function ($window, multimocks, scenarioName) {
       // load a scenario based on URL string,
       // e.g. http://example.com/?scenario=scenario1
-      scenarioMocks.setup(scenarioName.extract($window.location.search));
+      multimocks.setup(scenarioName.extract($window.location.search));
     }
   ]);

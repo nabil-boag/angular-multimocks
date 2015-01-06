@@ -6,8 +6,8 @@ module.exports = function (grunt) {
     fs = require('fs');
 
   var pwd = path.dirname(module.filename),
-    defaultTemplatePath = path.join(pwd, 'scenarioData.tpl'),
-    multipleFilesTemplatePath = path.join(pwd, 'multipleFilesScenarioData.tpl'),
+    defaultTemplatePath = path.join(pwd, 'multimocks.tpl'),
+    multipleFilesTemplatePath = path.join(pwd, 'multimocksMultipleFiles.tpl'),
     mockManifestFilename = 'mockResources.json';
 
   /**
@@ -27,7 +27,8 @@ module.exports = function (grunt) {
    * Read a scenario from a list of resource files, add URIs and merge in
    * resources from default scenario.
    */
-  var readScenario = function (baseURL, mockDir, defaultScenario, filenames, scenarioName) {
+  var readScenario = function (baseURL, mockDir, defaultScenario, filenames,
+      scenarioName) {
     // read mock data files for this scenario
     var scenario = filenames.map(function (filename) {
       var filepath = fs.realpathSync(path.join(mockDir, filename)),
@@ -57,7 +58,7 @@ module.exports = function (grunt) {
 
   /**
    * Read scenario definitions and return a structure that
-   * scenarioMockDataProvider.setMockData will understand.
+   * multimockDataProvider.setMockData will understand.
    */
   var readMockManifest = function (baseURL, mockDir) {
     var mockManifest = path.join(process.cwd(), mockDir, mockManifestFilename),
@@ -169,13 +170,13 @@ module.exports = function (grunt) {
 
     var output = _.template(templateString, templateData);
 
-    // write scenarioData.js to file
+    // write file
     fs.writeFileSync(path, output);
   };
 
   /**
-   * Read mock manifest and JSON files and compile into single scenarioData.js
-   * file.
+   * Read mock manifest and JSON files and compile into JS files ready for
+   * inclusion into an Angular app.
    */
   var writeScenarioData = function () {
     this.files.forEach(function (f) {
@@ -200,7 +201,7 @@ module.exports = function (grunt) {
 
         fs.mkdirSync(f.dest);
 
-        for (index in scenarioData) {
+        for (var index in scenarioData) {
           if (scenarioData.hasOwnProperty(index)) {
             fileName = f.dest + '/' + index + '.js';
 
@@ -215,6 +216,7 @@ module.exports = function (grunt) {
   /**
    * Register Grunt task to compile mock resources into scenario data file.
    */
-  grunt.registerMultiTask('scenarios', 'Generate scenario data file',
-    writeScenarioData);
+  grunt.registerMultiTask('multimocks',
+      'Generate Angular Multimocks scenario data file',
+      writeScenarioData);
 };

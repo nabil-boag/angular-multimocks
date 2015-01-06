@@ -5,10 +5,10 @@
     angular
       .module("scenario")
       .config([
-        "scenarioMockDataProvider",
-        function (scenarioMockDataProvider) {
-          scenarioMockDataProvider.setDefaultScenario("_default");
-          scenarioMockDataProvider.addMockData(name, factory());
+        "multimockDataProvider",
+        function (multimockDataProvider) {
+          multimockDataProvider.setDefaultScenario("_default");
+          multimockDataProvider.addMockData(name, factory());
         }
       ]);
   } else if (typeof exports === "object") {

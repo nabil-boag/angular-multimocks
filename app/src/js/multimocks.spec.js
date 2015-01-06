@@ -1,8 +1,8 @@
 /* global describe, beforeEach, jasmine, module, inject, it, xit, expect */
 
-describe('scenario', function () {
-  var mockHttpBackend, mockWindow, scenarioMockDataProvider, scenarioMockData,
-    scenarioMocks, scenarioName, scenario1, scenario2, pollScenario, scenarios;
+describe('multimocks', function () {
+  var mockHttpBackend, mockWindow, multimocksDataProvider, multimocksData,
+    multimocks, scenarioName, scenario1, scenario2, pollScenario, scenarios;
 
   beforeEach(function () {
     scenario1 = [
@@ -74,45 +74,45 @@ describe('scenario', function () {
     });
   });
 
-  describe('scenarioMockDataProvider', function () {
+  describe('multimocksDataProvider', function () {
     beforeEach(function () {
       module(
         'scenario',
-        function ($provide, _scenarioMockDataProvider_) {
+        function ($provide, _multimocksDataProvider_) {
           $provide.value('$httpBackend', mockHttpBackend);
-          scenarioMockDataProvider = _scenarioMockDataProvider_;
+          multimocksDataProvider = _multimocksDataProvider_;
         }
       );
 
-      inject(function (_scenarioMockData_, _scenarioMocks_) {
-        scenarioMockData = _scenarioMockData_;
-        scenarioMocks = _scenarioMocks_;
+      inject(function (_multimocksData_, _multimocks_) {
+        multimocksData = _multimocksData_;
+        multimocks = _multimocks_;
       });
     });
 
     it('should allow a client app to set mock data', function () {
       // act
-      scenarioMockDataProvider.setMockData(scenarios);
+      multimocksDataProvider.setMockData(scenarios);
 
       // assert
-      expect(scenarioMockData.getMockData()).toEqual(scenarios);
+      expect(multimocksData.getMockData()).toEqual(scenarios);
     });
 
     it('should allow a client app to incrementally add mock data', function () {
       // act
-      scenarioMockDataProvider.addMockData('scenario1', scenario1);
-      scenarioMockDataProvider.addMockData('scenario2', scenario2);
+      multimocksDataProvider.addMockData('scenario1', scenario1);
+      multimocksDataProvider.addMockData('scenario2', scenario2);
 
       // assert
-      expect(scenarioMockData.getMockData()).toEqual(scenarios);
+      expect(multimocksData.getMockData()).toEqual(scenarios);
     });
 
     it('should load the default scenario if specified', function () {
       // arrange
-      scenarioMockDataProvider.addMockData('_default', scenario2);
+      multimocksDataProvider.addMockData('_default', scenario2);
 
       // act
-      scenarioMocks.setup();
+      multimocks.setup();
 
       // assert
       var mockResource = scenario2[0];
@@ -127,23 +127,23 @@ describe('scenario', function () {
       var defaultScenario = 'foo';
 
       // act
-      scenarioMockDataProvider.setDefaultScenario(defaultScenario);
+      multimocksDataProvider.setDefaultScenario(defaultScenario);
 
       // assert
-      expect(scenarioMockData.getDefaultScenario()).toEqual(defaultScenario);
+      expect(multimocksData.getDefaultScenario()).toEqual(defaultScenario);
     });
   });
 
-  describe('scenarioMocks', function () {
-    var setupScenarioMocks = function (mockData) {
+  describe('setup', function () {
+    var setupMultimocks = function (mockData) {
       mockWindow = {location: {search: '?scenario=scenario2'}};
       module(
         'scenario',
-        function ($provide, _scenarioMockDataProvider_) {
+        function ($provide, _multimocksDataProvider_) {
           $provide.value('$httpBackend', mockHttpBackend);
           $provide.value('$window', mockWindow);
-          scenarioMockDataProvider = _scenarioMockDataProvider_;
-          scenarioMockDataProvider.setMockData(mockData);
+          multimocksDataProvider = _multimocksDataProvider_;
+          multimocksDataProvider.setMockData(mockData);
         }
       );
       inject();
@@ -151,7 +151,7 @@ describe('scenario', function () {
 
     it('should load the scenario specified on the query string', function () {
       // arrange
-      setupScenarioMocks(scenarios);
+      setupMultimocks(scenarios);
 
       // assert
       var mockResource = scenario2[0];
@@ -163,7 +163,7 @@ describe('scenario', function () {
 
     it('should do nothing if the specified scenario isn\'t found', function () {
       // arrange - inject empty mock data
-      setupScenarioMocks({});
+      setupMultimocks({});
 
       // assert
       expect(mockHttpBackend.when).not.toHaveBeenCalled();
@@ -174,7 +174,7 @@ describe('scenario', function () {
     it('should register a function to generate responses for mocks with ' +
        'polling', function () {
       // arrange
-      setupScenarioMocks({'scenario2': pollScenario});
+      setupMultimocks({'scenario2': pollScenario});
 
       // assert
       var mockResource = scenario2[0];

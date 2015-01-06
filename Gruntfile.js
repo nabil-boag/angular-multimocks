@@ -43,7 +43,7 @@ module.exports = function (grunt) {
     env: grunt.option('env') || 'dev',
 
     app: {
-      name: 'angular-scenario',
+      name: 'angular-multimocks',
       source_dir: 'app/src',
       build_dir: 'app/build',
       package_dir: 'app/package'

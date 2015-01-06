@@ -1,5 +1,5 @@
 {
-  "name": "angular-scenario",
+  "name": "angular-multimocks",
   "version": "0.3.0",
   "authors": [
     {
@@ -12,7 +12,7 @@
     }
   ],
   "description": "Tools for managing mock data scenarios in AngularJS applications",
-  "main": "app/package/js/angular-scenario.min.js",
+  "main": "app/package/js/angular-multimocks.min.js",
   "devDependencies": {
     "angular-mocks": "~1.2.0",
     "angular-ui-router": "0.2.0"
