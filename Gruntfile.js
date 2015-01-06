@@ -27,7 +27,6 @@ module.exports = function (grunt) {
   ]);
   grunt.registerTask('package', [
     'clean:package',
-    'copy:package',
     'concat:package',
     'uglify:package'
   ]);
@@ -77,22 +76,6 @@ module.exports = function (grunt) {
             expand: true,
             src: ['bower.json', 'package.json'],
             dest: '<%= app.build_dir %>'
-          }
-        ]
-      },
-      package: {
-        files: [
-          {
-            expand: true,
-            cwd: '<%= app.build_dir %>',
-            src: [
-              'index.html',
-              'images/**',
-              'bower.json',
-              'package.json',
-              'bower_components/**'
-            ],
-            dest: '<%= app.package_dir %>'
           }
         ]
       }
