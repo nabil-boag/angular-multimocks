@@ -7,7 +7,8 @@
     "url": "git://github.com/wongatech/angular-scenario"
   },
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt build test:dev",
+    "postinstall": "bower install"
   },
   "dependencies": {
     "lodash": "~2.4.1"

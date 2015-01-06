@@ -1,14 +1,7 @@
 language: node_js
 
 node_js:
-  - "0.11"
   - "0.10"
 
-before_install: npm install -g bower grunt-cli
-
-install:
-  - npm install
-  - bower install
-
-before_script:
-  - grunt build
+before_install:
+  - "npm install --global bower grunt-cli"

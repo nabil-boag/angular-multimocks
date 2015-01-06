@@ -17,10 +17,10 @@ module.exports = function (grunt) {
     'copy:build'
   ]);
   grunt.registerTask('test', [
-    'karma:browser_unit'
-  ]);
-  grunt.registerTask('test:dev', [
     'karma:headless_unit'
+  ]);
+  grunt.registerTask('test:browser', [
+    'karma:browser_unit'
   ]);
   grunt.registerTask('test:debug', [
     'karma:browser_unit_debug'
