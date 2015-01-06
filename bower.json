@@ -1,6 +1,6 @@
 {
   "name": "angular-multimocks",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "authors": [
     {
       "name": "Ben Godfrey",
@@ -30,5 +30,5 @@
     "*.js",
     "LICENSE",
     "README.md"
-  ],
+  ]
 }
