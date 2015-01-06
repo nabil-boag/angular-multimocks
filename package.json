@@ -6,6 +6,9 @@
     "type": "git",
     "url": "git://github.com/wongatech/angular-scenario"
   },
+  "scripts": {
+    "test": "grunt test"
+  },
   "dependencies": {
     "lodash": "~2.4.1"
   },
