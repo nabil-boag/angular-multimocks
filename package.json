@@ -4,7 +4,7 @@
   "description": "Tools for managing mock data scenarios in AngularJS applications",
   "repository": {
     "type": "git",
-    "url": "git://github.com/wongatech/tempo-scenario"
+    "url": "git://github.com/wongatech/angular-scenario"
   },
   "dependencies": {
     "lodash": "~2.4.1"

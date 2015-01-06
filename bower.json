@@ -12,7 +12,7 @@
     }
   ],
   "description": "Tools for managing mock data scenarios in AngularJS applications",
-  "main": "app/package/js/tempo-scenario.min.js",
+  "main": "app/package/js/angular-scenario.min.js",
   "devDependencies": {
     "angular-mocks": "~1.2.0",
     "angular-ui-router": "0.2.0"
