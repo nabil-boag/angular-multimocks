@@ -6,7 +6,7 @@ Angular Multimocks
 Angular Multimocks lets you test how your app behaves with different responses
 from an API.
 
-Angular Multimocks allows you to sets of mock API responses for different
+Angular Multimocks allows you to define sets of mock API responses for different
 scenarios as JSON files. A developer of an e-commerce app could set up scenarios
 for a new customer, one who is registered and one who has an order outstanding.
 
@@ -16,6 +16,20 @@ parameter: `?scenario=foo`.
 You can use Angular Multimocks to quickly test your app works in all situations
 while developing or to provide mock data for a suite of automated acceptance
 tests.
+
+Example Use Case
+----------------
+You have an application which calls to `http://example.com/customer/123/basket`
+to get a list of items in the customers basket. You'd like to be able to easily
+switch between different responses from the endpoint so that you can test
+the various use cases. You may want responses for the following:
+- An empty basket
+- A basket with a quick buy option
+- A basket with out of stock items
+
+Angular Multimocks lets you easily configure responses for each scenario without
+you having to programatically interact with $http.
+
 
 Usage
 -----
