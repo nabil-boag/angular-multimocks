@@ -23,9 +23,9 @@ You have an application which calls to `http://example.com/customer/123/basket`
 to get a list of items in the customers basket. You'd like to be able to easily
 switch between different responses from the endpoint so that you can test
 the various use cases. You may want responses for the following:
-- An empty basket
-- A basket with a quick buy option
-- A basket with out of stock items
+- An empty basket `.../customer/123/basket?scenario=emptyBasket`
+- A basket with a quick buy option `.../customer/123/basket?scenario=quickBuyBasket`
+- A basket with out of stock items `.../customer/123/basket?scenario=outOfStockBasket`
 
 Angular Multimocks lets you easily configure responses for each scenario without
 you having to programatically interact with $http.
