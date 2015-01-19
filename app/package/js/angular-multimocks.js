@@ -5,7 +5,12 @@ angular
 
   .provider('multimocksData', function () {
     var mockData = {},
+      mockHeaders = {},
       defaultScenario = '_default';
+
+    this.setHeaders = function (data) {
+      mockHeaders = data;
+    };
 
     this.setMockData = function (data) {
       mockData = data;
@@ -26,6 +31,9 @@ angular
         },
         getDefaultScenario: function () {
           return defaultScenario;
+        },
+        getHeaders: function () {
+          return mockHeaders;
         }
       };
     };
@@ -38,9 +46,7 @@ angular
     'multimocksData',
     function ($q, $http, $httpBackend, multimocksData) {
       var setupHttpBackendForMockResource = function (deferred, mock) {
-        var mockHeaders = {
-          'Content-Type': 'application/hal+json; charset=utf-8'
-        };
+        var mockHeaders = multimocksData.getHeaders();
 
         // Mock a polling resource.
         if (mock.poll) {
