@@ -5,7 +5,9 @@ angular
 
   .provider('multimocksData', function () {
     var mockData = {},
-      mockHeaders = {},
+      mockHeaders = {
+        'Content-type': 'application/json'
+      },
       defaultScenario = '_default';
 
     this.setHeaders = function (data) {

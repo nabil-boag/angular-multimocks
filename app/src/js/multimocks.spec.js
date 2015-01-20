@@ -101,6 +101,13 @@ describe('multimocks', function () {
       expect(multimocksData.getHeaders()).toEqual(mockHeaders);
     });
 
+    it('should have json as the default content type', function () {
+      // assert
+      expect(multimocksData.getHeaders()).toEqual({
+        'Content-type': 'application/json'
+      });
+    });
+
     it('should allow a client app to set mock data', function () {
       // act
       multimocksDataProvider.setMockData(scenarios);
