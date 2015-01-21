@@ -177,3 +177,31 @@ the generated files in your app:
 
 Angular Multimocks also declares a provider, `multimocksDataProvider`, which
 allows you to set mock data by passing an object to the `setMockData` method.
+
+`multimocksDataProvider` also gives you the ability to overwrite the default
+headers returned by Angular Multimocks. Below we're setting the headers to
+always provide a content type of HAL json and a utf-8 character set.
+
+```
+.config(['mutimocksDataProvider', function (multimocksDataProvider) {
+  multimocksDataProvider.setHeaders({
+    'Content-Type': 'application/hal+json; charset=utf-8'
+  });
+}]);
+```
+
+
+Contributing
+------------
+
+We :heart: pull requests!
+
+To contribute:
+
+- Fork the repo
+- Run `npm install`
+- Run `bower install`
+- Run `grunt workflow:dev` to watch for changes, lint, build and run tests as
+  you're working
+- Write your unit tests for your change
+- Run `grunt package` to update the distribution files
