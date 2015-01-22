@@ -58,7 +58,7 @@ angular
           // Respond with a 204 which will then get polled until a 200 is
           // returned.
           $httpBackend
-            .when(mock.httpMethod, mock.uri, mock.requestData)
+            .when(mock.httpMethod, new Regex(mock.uri), mock.requestData)
             .respond(function () {
              // Call a certain amount of times to simulate polling.
               if (pollCounter < pollCount) {
@@ -69,7 +69,7 @@ angular
             });
         } else {
           $httpBackend
-            .when(mock.httpMethod, mock.uri, mock.requestData)
+            .when(mock.httpMethod, new Regex(mock.uri), mock.requestData)
             .respond(mock.statusCode, mock.response, mockHeaders);
         }
 

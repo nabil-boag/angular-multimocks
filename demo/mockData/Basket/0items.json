@@ -1,6 +1,7 @@
 {
   "httpMethod": "GET",
   "statusCode": 200,
+  "uri": "/customer/\d*/basket/",
   "response": {
     "items": []
   }

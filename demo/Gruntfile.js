@@ -9,6 +9,10 @@ module.exports = function(grunt) {
         src: 'mockData',
         dest: 'mockOutput.js',
         multipleFiles: false,
+
+        //optionally load plugins
+        //plugins: ['hal'],
+
         baseURL: 'https://example.com/'
       }
     }

@@ -31,20 +31,9 @@ module.exports = function (grunt) {
       scenarioName) {
     // read mock data files for this scenario
     var scenario = filenames.map(function (filename) {
-      var filepath = fs.realpathSync(path.join(mockDir, filename)),
-        resource = require(filepath);
+      var filepath = fs.realpathSync(path.join(mockDir, filename));
 
-      // rel name is the directory name of the file
-      resource.rel = filename.split('/')[0];
-
-      // add URIs for resources
-      if (resource.rel === 'Root') {
-        resource.uri = baseURL;
-      }
-      else {
-        resource.uri = baseURL + resource.rel;
-      }
-      return resource;
+      return require(filepath);
     });
 
     // if not default scenario, merge in default resources
@@ -119,11 +108,26 @@ module.exports = function (grunt) {
   /**
    * Add _links to resources in all scenarios.
    */
-  var scenarioDataWithLinks = function (data) {
+  var decorateWithHalLinks = function (data, fileConfig) {
     var links = generateAvailableLinks(data);
     return _.mapValues(data, function (scenario) {
-      return scenarioWithLinks(links, scenario);
+      return addHalUris(scenarioWithLinks(links, scenario), fileConfig);
     });
+  };
+
+  var addHalUris = function (data, fileConfig) {
+    // rel name is the directory name of the file
+    resource.rel = filename.split('/')[0];
+
+    // add URIs for resources
+    if (resource.rel === 'Root') {
+      resource.uri = fileConfig.baseURL;
+    }
+    else {
+      resource.uri = fileConfig.baseURL + resource.rel;
+    }
+
+    return resource;
   };
 
   /**
@@ -134,23 +138,53 @@ module.exports = function (grunt) {
    *
    * @returns {string}
    */
-  var readScenarioData = function (baseURL, mockDir) {
-    return JSON.stringify(readScenarioDataAsObject(baseURL, mockDir));
+  var readScenarioData = function (baseURL, mockDir, plugins, fileConfig) {
+    return JSON.stringify(readScenarioDataAsObject(baseURL, mockDir, plugins,
+      fileConfig));
   };
 
   /**
-   * Return a javascript object of all scenario data
+   * Return a javascript object of all scenario data.
    *
    * @param {string} baseURL
    * @param {string} mockDir
    *
    * @returns {object}
    */
-  var readScenarioDataAsObject = function (baseURL, mockDir) {
+  var readScenarioDataAsObject = function (baseURL, mockDir, plugins,
+      fileConfig) {
     var data = readMockManifest(baseURL, mockDir);
 
-    return scenarioDataWithLinks(data);
+    if (plugins) {
+      return runPlugins(data, plugins, fileConfig);
+    }
+    else {
+      return data;
+    }
   };
+
+  /**
+   * Executes the plugins declared in Gruntfile.js to decorate responses.
+   *
+   * @param  {object} data
+   * @param  {array} plugins
+   * @return {object} decoratedData
+   */
+  var runPlugins = function (data, plugins, fileConfig) {
+
+    var pluginRegistry = {
+      'hal': decorateWithHalLinks
+    };
+
+    var decoratedData = data;
+
+    for (var i = 0; i < plugins.length; i++) {
+      var pluginFunc = pluginRegistry[plugins[i]];
+      decoratedData = pluginFunc(decoratedData, fileConfig);
+    };
+
+    return decoratedData;
+  }
 
   /**
    * Save the file
@@ -179,31 +213,33 @@ module.exports = function (grunt) {
    * inclusion into an Angular app.
    */
   var writeScenarioData = function () {
-    this.files.forEach(function (f) {
-      f.multipleFiles = f.multipleFiles || false;
+    this.files.forEach(function (fileConfig) {
+      fileConfig.multipleFiles = fileConfig.multipleFiles || false;
 
-      grunt.verbose.writeln('src: ' + f.src);
-      grunt.verbose.writeln('dest: ' + f.dest);
-      grunt.verbose.writeln('template: ' + f.template);
-      grunt.verbose.writeln('baseURL: ' + f.baseURL);
+      grunt.verbose.writeln('src: ' + fileConfig.src);
+      grunt.verbose.writeln('dest: ' + fileConfig.dest);
+      grunt.verbose.writeln('template: ' + fileConfig.template);
+      grunt.verbose.writeln('baseURL: ' + fileConfig.baseURL);
+      grunt.verbose.writeln('plugins: ' + fileConfig.plugins);
 
-      var mockDir = f.src[0],// TODO handle multiple dirs by merging manifests?
+      var mockDir = fileConfig.src[0],// TODO handle multiple dirs by merging manifests?
         scenarioData;
 
-      if (!f.multipleFiles) {
+      if (!fileConfig.multipleFiles) {
         // read mock manifest and load data for each scenario
-        scenarioData = readScenarioData(f.baseURL, mockDir);
-        saveFile(f.template, f.dest, scenarioData);
+        scenarioData = readScenarioData(fileConfig.baseURL, mockDir,
+          fileConfig.plugins, fileConfig);
+        saveFile(fileConfig.template, fileConfig.dest, scenarioData);
       } else {
         var fileName;
 
-        scenarioData = readScenarioDataAsObject(f.baseURL, mockDir);
+        scenarioData = readScenarioDataAsObject(fileConfig.baseURL, mockDir, fileConfig.plugins, fileConfig);
 
-        fs.mkdirSync(f.dest);
+        fs.mkdirSync(fileConfig.dest);
 
         for (var index in scenarioData) {
           if (scenarioData.hasOwnProperty(index)) {
-            fileName = f.dest + '/' + index + '.js';
+            fileName = fileConfig.dest + '/' + index + '.js';
 
             saveFile(multipleFilesTemplatePath, fileName,
               JSON.stringify(scenarioData[index]), index);
