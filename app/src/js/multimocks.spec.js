@@ -2,7 +2,8 @@
 
 describe('multimocks', function () {
   var mockHttpBackend, mockWindow, multimocksDataProvider, multimocksData,
-    multimocks, scenarioName, scenario1, scenario2, pollScenario, scenarios;
+    multimocks, scenarioName, scenario1, scenario2, pollScenario, scenarios,
+    mockHeaders;
 
   beforeEach(function () {
     scenario1 = [
@@ -52,6 +53,8 @@ describe('multimocks', function () {
     mockHttpBackend.when.andReturn(mockHttpBackend);
 
     mockWindow = {location: {search: ''}};
+
+    mockHeaders = {foo: 'bar'};
   });
 
   describe('scenarioName', function () {
@@ -90,6 +93,21 @@ describe('multimocks', function () {
       });
     });
 
+    it('should allow a client app to set response headers', function () {
+      // act
+      multimocksDataProvider.setHeaders(mockHeaders);
+
+      // assert
+      expect(multimocksData.getHeaders()).toEqual(mockHeaders);
+    });
+
+    it('should have json as the default content type', function () {
+      // assert
+      expect(multimocksData.getHeaders()).toEqual({
+        'Content-type': 'application/json'
+      });
+    });
+
     it('should allow a client app to set mock data', function () {
       // act
       multimocksDataProvider.setMockData(scenarios);
@@ -110,6 +128,7 @@ describe('multimocks', function () {
     it('should load the default scenario if specified', function () {
       // arrange
       multimocksDataProvider.addMockData('_default', scenario2);
+      multimocksDataProvider.setHeaders(mockHeaders);
 
       // act
       multimocks.setup();
@@ -119,7 +138,7 @@ describe('multimocks', function () {
       expect(mockHttpBackend.when).toHaveBeenCalledWith(
         mockResource.httpMethod, mockResource.uri, mockResource.requestData);
       expect(mockHttpBackend.respond).toHaveBeenCalledWith(
-        mockResource.statusCode, mockResource.response, jasmine.any(Object));
+        mockResource.statusCode, mockResource.response, mockHeaders);
     });
 
     it('should allow a client app to set the default scenario', function () {
@@ -144,6 +163,7 @@ describe('multimocks', function () {
           $provide.value('$window', mockWindow);
           multimocksDataProvider = _multimocksDataProvider_;
           multimocksDataProvider.setMockData(mockData);
+          multimocksDataProvider.setHeaders(mockHeaders);
         }
       );
       inject();
@@ -158,7 +178,7 @@ describe('multimocks', function () {
       expect(mockHttpBackend.when).toHaveBeenCalledWith(
         mockResource.httpMethod, mockResource.uri, mockResource.requestData);
       expect(mockHttpBackend.respond).toHaveBeenCalledWith(
-        mockResource.statusCode, mockResource.response, jasmine.any(Object));
+        mockResource.statusCode, mockResource.response, mockHeaders);
     });
 
     it('should do nothing if the specified scenario isn\'t found', function () {
