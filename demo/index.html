@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html ng-app="demo">
+  <head>
+    <meta charset="utf-8">
+    <title>Angular Scenario Demo</title>
+  </head>
+
+  <body ng-controller="demoCtrl">
+    <div>
+      <h1>Angular Scenario Demo</h1>
+
+      <h2>Scenarios</h2>
+
+      <ul>
+        <li><a href="?scenario=">2 items</a></li>
+        <li><a href="?scenario=noItems">0 items</a></li>
+        <li><a href="?scenario=outOfStock">outOfStock</a></li>
+      </ul>
+
+      <h2>Response</h2>
+
+      <p>URI: {{uri}}</p>
+
+      <p>
+        <pre>{{data | json}}</pre>
+      </p>
+
+
+    </div>
+
+    <script src="lib/lodash/dist/lodash.js"></script>
+    <script src="lib/angular/angular.js"></script>
+    <script src="lib/angular-mocks/angular-mocks.js"></script>
+    <script src="lib/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="../app/src/js/multimocks.js"></script>
+    <script src="mockOutput.js"></script>
+
+    <script>
+      // simple app which makes a request and displays the results in the
+      // template
+      angular
+        .module('demo', ['scenario', 'ngMockE2E'])
+        .config(['$stateProvider', function ($stateProvider) {
+          $stateProvider.state('demo', {
+            url: '/demo',
+            controller: 'demoCtrl',
+          });
+        }])
+        .controller('demoCtrl', ['$scope', '$http', function ($scope, $http) {
+          $scope.values = {};
+          $scope.uri = 'https://example.com/Basket';
+          $http.get($scope.uri).then(function (response) {
+            $scope.data = response.data;
+          });
+        }]);
+   </script>
+ </body>
+</html>

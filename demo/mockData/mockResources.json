@@ -1,0 +1,11 @@
+{
+  "_default": [
+    "Basket/2items.json"
+  ],
+  "noItems": [
+    "Basket/0items.json"
+  ],
+  "outOfStock": [
+    "Basket/outOfStock.json"
+  ]
+}

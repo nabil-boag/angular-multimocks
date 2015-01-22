@@ -1,0 +1,14 @@
+{
+  "httpMethod": "GET",
+  "statusCode": 200,
+  "response": {
+    "items": [
+      {
+        "title": "REST in Practise",
+        "type": "Book",
+        "desc": "In this insightful book, three SOA experts provide a down-to-earth explanation of REST and demonstrate how you can develop simple and elegant distributed hypermedia systems by applying the Web's guiding principles to common enterprise computing problems. You'll learn techniques for implementing specific Web technologies and patterns to solve the needs of a typical company as it grows from modest beginnings to become a global enterprise.",
+        "inStock": "0"
+      }
+    ]
+  }
+}
