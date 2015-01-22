@@ -19,17 +19,17 @@ tests.
 
 Example Use Case
 ----------------
-You have an application which calls to `http://example.com/customer/123/basket`
-to get a list of items in the customers basket. You'd like to be able to easily
-switch between different responses from the endpoint so that you can test
-the various use cases. You may want responses for the following:
-- An empty basket `.../customer/123/basket?scenario=emptyBasket`
-- A basket with a quick buy option `.../customer/123/basket?scenario=quickBuyBasket`
-- A basket with out of stock items `.../customer/123/basket?scenario=outOfStockBasket`
 
-Angular Multimocks lets you easily configure responses for each scenario without
-you having to programatically interact with $http.
+You have an application which calls to `http://example.com/cart` to get a list
+of items in the customer's shopping cart. You'd like to be able to easily
+switch between different API responses so that you can test the various use
+cases. You may want responses for the following:
 
+| Scenario                              | URL                             |
+| ------------------------------------- | ------------------------------- |
+| Shopping cart is empty                | `/cart?scenario=emptyCart`      |
+| Shopping cart with a quick buy option | `/cart?scenario=quickBuyCart`   |
+| Shopping cart with out of stock items | `/cart?scenario=outOfStockCart` |
 
 Usage
 -----
@@ -173,23 +173,22 @@ the generated files in your app:
 ```
 
 `multimocksDataProvider`
---------------------------
+------------------------
 
 Angular Multimocks also declares a provider, `multimocksDataProvider`, which
 allows you to set mock data by passing an object to the `setMockData` method.
 
 `multimocksDataProvider` also gives you the ability to overwrite the default
 headers returned by Angular Multimocks. Below we're setting the headers to
-always provide a content type of HAL json and a utf-8 character set.
+specify that the content type is HAL JSON.
 
 ```
 .config(['mutimocksDataProvider', function (multimocksDataProvider) {
   multimocksDataProvider.setHeaders({
-    'Content-Type': 'application/hal+json; charset=utf-8'
+    'Content-Type': 'application/hal+json'
   });
 }]);
 ```
-
 
 Contributing
 ------------
@@ -204,4 +203,5 @@ To contribute:
 - Run `grunt workflow:dev` to watch for changes, lint, build and run tests as
   you're working
 - Write your unit tests for your change
+- Test with the demo app
 - Run `grunt package` to update the distribution files
