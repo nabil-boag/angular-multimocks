@@ -21,7 +21,7 @@
     "angular": "~1.2.0",
     "angular-resource": "~1.2.0",
     "angular-ui-utils": "~0.0.4",
-    "lodash": "*"
+    "lodash": "~2.4.1"
   },
   "ignore": [
     "app/src",
