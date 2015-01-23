@@ -5,9 +5,12 @@ module.exports = function (grunt) {
     path = require('path'),
     fs = require('fs');
 
+  var pluginRegistry = require('./plugins');
+
   var pwd = path.dirname(module.filename),
-    defaultTemplatePath = path.join(pwd, 'multimocks.tpl'),
-    multipleFilesTemplatePath = path.join(pwd, 'multimocksMultipleFiles.tpl'),
+    singleFileDefaultTemplate = path.join(pwd, 'multimocks.tpl'),
+    multipleFilesDefaultTemplate = path.join(pwd,
+        'multimocksMultipleFiles.tpl'),
     mockManifestFilename = 'mockResources.json';
 
   /**
@@ -19,7 +22,7 @@ module.exports = function (grunt) {
     // remove parent scenario resource which provide same resource as child
     // scenario
     return _.uniq(all, function (resource) {
-      return resource.rel + resource.httpMethod;
+      return resource.uri + resource.httpMethod;
     });
   };
 
@@ -27,13 +30,17 @@ module.exports = function (grunt) {
    * Read a scenario from a list of resource files, add URIs and merge in
    * resources from default scenario.
    */
-  var readScenario = function (baseURL, mockDir, defaultScenario, filenames,
+  var readScenario = function (config, mockSrc, defaultScenario, filenames,
       scenarioName) {
     // read mock data files for this scenario
     var scenario = filenames.map(function (filename) {
-      var filepath = fs.realpathSync(path.join(mockDir, filename));
+      var filepath = fs.realpathSync(path.join(mockSrc, filename));
 
-      return require(filepath);
+      return {
+        'scenarioName': scenarioName,
+        'filename': filename,
+        'scenario': require(filepath)
+      };
     });
 
     // if not default scenario, merge in default resources
@@ -49,142 +56,72 @@ module.exports = function (grunt) {
    * Read scenario definitions and return a structure that
    * multimockDataProvider.setMockData will understand.
    */
-  var readMockManifest = function (baseURL, mockDir) {
-    var mockManifest = path.join(process.cwd(), mockDir, mockManifestFilename),
+  var readMockManifest = function (config, mockSrc) {
+    var mockManifestPath = path.join(process.cwd(), mockSrc,
+      mockManifestFilename),
 
-    // read manifest JSON by require'ing it
-      mocks = require(mockManifest),
+      // read manifest JSON by require'ing it
+      mockManifest = require(mockManifestPath),
 
-    // read files for default scenario first, so we can merge it into other
-    // scenarios later
-      defaultScenario = readScenario(baseURL, mockDir, [], mocks._default,
-        '_default');
+      // read files for default scenario first, so we can merge it into other
+      // scenarios later
+      defaultScenario = readScenario(config, mockSrc, [],
+        mockManifest._default, '_default');
 
     // read files for each scenario
-    return _.mapValues(mocks, function (filenames, scenarioName) {
-      return readScenario(baseURL, mockDir, defaultScenario, filenames,
+    return _.mapValues(mockManifest, function (filenames, scenarioName) {
+      return readScenario(config, mockSrc, defaultScenario, filenames,
         scenarioName);
     });
   };
 
   /**
-   * Generate a list of all available links in all scenarios.
-   */
-  var generateAvailableLinks = function (scenarioData) {
-    var scenarioLinks = _.map(scenarioData, function (scenario) {
-      return _.object(_.map(scenario, function (resource) {
-        // return key-value array for _.object
-        return [
-          resource.rel,
-          {
-            rel: resource.rel,
-            href: resource.uri,
-            method: resource.httpMethod
-          }
-        ];
-      }));
-    });
-    return _.reduce(scenarioLinks, _.merge, {});
-  };
-
-  /**
-   * Add response._links to all resources in a scenario.
-   */
-  var scenarioWithLinks = function (links, scenario) {
-    return _.map(scenario, function (resource) {
-      var resourceClone = _.cloneDeep(resource);
-      if (resourceClone.response) {
-        if (resourceClone.relNames) {
-          resourceClone.response._links = _.pick(links, resourceClone.relNames);
-        }
-        else {
-          resourceClone.response._links = links;
-        }
-      }
-      return resourceClone;
-    });
-  };
-
-  /**
-   * Add _links to resources in all scenarios.
-   */
-  var decorateWithHalLinks = function (data, fileConfig) {
-    var links = generateAvailableLinks(data);
-    return _.mapValues(data, function (scenario) {
-      return addHalUris(scenarioWithLinks(links, scenario), fileConfig);
-    });
-  };
-
-  var addHalUris = function (data, fileConfig) {
-    // rel name is the directory name of the file
-    resource.rel = filename.split('/')[0];
-
-    // add URIs for resources
-    if (resource.rel === 'Root') {
-      resource.uri = fileConfig.baseURL;
-    }
-    else {
-      resource.uri = fileConfig.baseURL + resource.rel;
-    }
-
-    return resource;
-  };
-
-  /**
-   * Return JSON string of all scenario data.
-   *
-   * @param {string} baseURL
-   * @param {string} mockDir
-   *
-   * @returns {string}
-   */
-  var readScenarioData = function (baseURL, mockDir, plugins, fileConfig) {
-    return JSON.stringify(readScenarioDataAsObject(baseURL, mockDir, plugins,
-      fileConfig));
-  };
-
-  /**
-   * Return a javascript object of all scenario data.
-   *
-   * @param {string} baseURL
-   * @param {string} mockDir
-   *
-   * @returns {object}
-   */
-  var readScenarioDataAsObject = function (baseURL, mockDir, plugins,
-      fileConfig) {
-    var data = readMockManifest(baseURL, mockDir);
-
-    if (plugins) {
-      return runPlugins(data, plugins, fileConfig);
-    }
-    else {
-      return data;
-    }
-  };
-
-  /**
-   * Executes the plugins declared in Gruntfile.js to decorate responses.
+   * Executes each of the plugins configured in the application Gruntfile.js to
+   * decorate responses.
    *
    * @param  {object} data
    * @param  {array} plugins
    * @return {object} decoratedData
    */
-  var runPlugins = function (data, plugins, fileConfig) {
+  var runPlugins = function (data, pluginNames) {
+    grunt.verbose.writeln('runPlugins input', data);
+    var plugins = pluginNames.map(function (pn) { return pluginRegistry[pn]; }),
+      applyPlugin = function (oldData, plugin) { return plugin(oldData); };
+    // Use reduce to apply all the plugins to the data
+    var output = plugins.reduce(applyPlugin, data);
+    grunt.verbose.writeln('runPlugins output', output);
+    return output;
+  };
 
-    var pluginRegistry = {
-      'hal': decorateWithHalLinks
-    };
+  /**
+   * Strip context metadata from scenarios.
+   */
+  var removeContext = function (dataWithContext) {
+    return _.mapValues(dataWithContext, function (scenario) {
+      return scenario.map(function (response) {
+        return response.scenario;
+      });
+    });
+  };
 
-    var decoratedData = data;
+  /**
+   * Return a javascript object of all scenario data.
+   *
+   * @param {string} config
+   * @param {string} mockSrc
+   *
+   * @returns {object}
+   */
+  var readScenarioData = function (config, mockSrc) {
+    var dataWithContext = readMockManifest(config, mockSrc);
 
-    for (var i = 0; i < plugins.length; i++) {
-      var pluginFunc = pluginRegistry[plugins[i]];
-      decoratedData = pluginFunc(decoratedData, fileConfig);
-    };
+    grunt.verbose.writeln('readScenarioData config', config);
+    if (config.plugins) {
+      dataWithContext = runPlugins(dataWithContext, config.plugins);
+    }
 
-    return decoratedData;
-  }
+    return removeContext(dataWithContext);
+  };
 
   /**
    * Save the file
@@ -194,9 +131,8 @@ module.exports = function (grunt) {
    * @param {string} data
    * @param {string} name
    */
-  var saveFile = function (template, path, data, name) {
-    var templatePath = template || defaultTemplatePath,
-      templateString = fs.readFileSync(templatePath);
+  var writeScenarioModule = function (templatePath, path, data, name) {
+    var templateString = fs.readFileSync(templatePath);
 
     // generate scenarioData.js contents by inserting data into template
     var templateData = {scenarioData: data};
@@ -213,36 +149,48 @@ module.exports = function (grunt) {
    * inclusion into an Angular app.
    */
   var writeScenarioData = function () {
-    this.files.forEach(function (fileConfig) {
-      fileConfig.multipleFiles = fileConfig.multipleFiles || false;
+    this.files.forEach(function (taskConfig) {
+      taskConfig.multipleFiles = taskConfig.multipleFiles || false;
 
-      grunt.verbose.writeln('src: ' + fileConfig.src);
-      grunt.verbose.writeln('dest: ' + fileConfig.dest);
-      grunt.verbose.writeln('template: ' + fileConfig.template);
-      grunt.verbose.writeln('baseURL: ' + fileConfig.baseURL);
-      grunt.verbose.writeln('plugins: ' + fileConfig.plugins);
+      var defaultTemplate = singleFileDefaultTemplate;
+      if (taskConfig.multipleFiles) {
+        defaultTemplate = multipleFilesDefaultTemplate;
+      }
+      taskConfig.template = taskConfig.template || defaultTemplate;
 
-      var mockDir = fileConfig.src[0],// TODO handle multiple dirs by merging manifests?
-        scenarioData;
+      var mockSrc = taskConfig.src[0];
 
-      if (!fileConfig.multipleFiles) {
-        // read mock manifest and load data for each scenario
-        scenarioData = readScenarioData(fileConfig.baseURL, mockDir,
-          fileConfig.plugins, fileConfig);
-        saveFile(fileConfig.template, fileConfig.dest, scenarioData);
+      grunt.verbose.writeln('mockSrc', mockSrc);
+      grunt.verbose.writeln('dest', taskConfig.dest);
+      grunt.verbose.writeln('template', taskConfig.template);
+      grunt.verbose.writeln('multipleFiles', taskConfig.multipleFiles);
+      grunt.verbose.writeln('plugins', taskConfig.plugins);
+
+      // read all scenario data from manifest/JSON files
+      var scenarioData = readScenarioData(taskConfig, mockSrc);
+
+      grunt.verbose.writeln('scenarioData', scenarioData);
+
+      var scenarioModuleFilename = taskConfig.dest,
+        scenarioString;
+
+      if (!taskConfig.multipleFiles) {
+        // stringify all scenario files into a single Angular module
+        scenarioString = JSON.stringify(scenarioData);
+        writeScenarioModule(taskConfig.template, scenarioModuleFilename,
+          scenarioString);
       } else {
-        var fileName;
+        fs.mkdirSync(taskConfig.dest);
 
-        scenarioData = readScenarioDataAsObject(fileConfig.baseURL, mockDir, fileConfig.plugins, fileConfig);
+        // stringify each scenario file into it's own Angular module
+        for (var scenarioName in scenarioData) {
+          if (scenarioData.hasOwnProperty(scenarioName)) {
+            scenarioModuleFilename = taskConfig.dest + '/' + scenarioName +
+              '.js';
 
-        fs.mkdirSync(fileConfig.dest);
-
-        for (var index in scenarioData) {
-          if (scenarioData.hasOwnProperty(index)) {
-            fileName = fileConfig.dest + '/' + index + '.js';
-
-            saveFile(multipleFilesTemplatePath, fileName,
-              JSON.stringify(scenarioData[index]), index);
+            scenarioString = JSON.stringify(scenarioData[scenarioName]);
+            writeScenarioModule(taskConfig.template, scenarioModuleFilename,
+              scenarioString, scenarioName);
           }
         }
       }
@@ -253,6 +201,6 @@ module.exports = function (grunt) {
    * Register Grunt task to compile mock resources into scenario data file.
    */
   grunt.registerMultiTask('multimocks',
-      'Generate Angular Multimocks scenario data file',
+      'Generate Angular Multimocks scenario module',
       writeScenarioData);
 };

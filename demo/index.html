@@ -12,20 +12,16 @@
       <h2>Scenarios</h2>
 
       <ul>
-        <li><a href="?scenario=">2 items</a></li>
-        <li><a href="?scenario=noItems">0 items</a></li>
-        <li><a href="?scenario=outOfStock">outOfStock</a></li>
+        <li><a href="?">Empty cart</a></li>
+        <li><a href="?scenario=someItems">2 items in cart</a></li>
+        <li><a href="?scenario=outOfStock">Out of stock items</a></li>
       </ul>
 
       <h2>Response</h2>
 
-      <p>URI: {{uri}}</p>
+      <pre>{{method}} {{uri}}</pre>
 
-      <p>
-        <pre>{{data | json}}</pre>
-      </p>
-
-
+      <pre>{{data | json}}</pre>
     </div>
 
     <script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
@@ -48,7 +44,8 @@
         }])
         .controller('demoCtrl', ['$scope', '$http', function ($scope, $http) {
           $scope.values = {};
-          $scope.uri = 'https://example.com/Basket';
+          $scope.method = 'GET';
+          $scope.uri = '/customer/123/cart';
           $http.get($scope.uri).then(function (response) {
             $scope.data = response.data;
           });

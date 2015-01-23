@@ -1,7 +1,11 @@
-module.exports = function(grunt) {
+/* globals module */
+
+module.exports = function (grunt) {
+  // Normally you'd load angular-multimocks from NPM:
+  //
+  //   grunt.loadNpmTasks('angular-multimocks');
+  //
   grunt.task.loadTasks('../tasks');
-  //Replace the above with this for your project
-  //grunt.loadNpmTasks('angular-multimocks');
 
   grunt.config.init({
     multimocks: {
@@ -10,10 +14,8 @@ module.exports = function(grunt) {
         dest: 'mockOutput.js',
         multipleFiles: false,
 
-        //optionally load plugins
-        //plugins: ['hal'],
-
-        baseURL: 'https://example.com/'
+        // optionally apply plugins
+        // plugins: ['hal'], // (hal plugin will change uris and break demo)
       }
     }
   });

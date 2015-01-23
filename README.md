@@ -124,7 +124,6 @@ multimocks: {
   myApp: {
     src: 'mocks',
     dest: 'build/multimocks.js',
-    baseURL: 'http://api.example.com/',
     template: 'myTemplate.tpl' // optional
   }
 },
@@ -157,7 +156,6 @@ multimocks: {
     src: 'mocks',
     dest: 'build/multimocks',
     multipleFiles: true,
-    baseURL: 'http://api.example.com/',
     template: 'myTemplate.tpl' // optional
   }
 },

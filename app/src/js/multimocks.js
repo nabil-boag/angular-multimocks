@@ -48,7 +48,8 @@ angular
     'multimocksData',
     function ($q, $http, $httpBackend, multimocksData) {
       var setupHttpBackendForMockResource = function (deferred, mock) {
-        var mockHeaders = multimocksData.getHeaders();
+        var mockHeaders = multimocksData.getHeaders(),
+          uriRegExp = new RegExp('^' + mock.uri + '$');
 
         // Mock a polling resource.
         if (mock.poll) {
@@ -58,7 +59,7 @@ angular
           // Respond with a 204 which will then get polled until a 200 is
           // returned.
           $httpBackend
-            .when(mock.httpMethod, new Regex(mock.uri), mock.requestData)
+            .when(mock.httpMethod, uriRegExp, mock.requestData)
             .respond(function () {
              // Call a certain amount of times to simulate polling.
               if (pollCounter < pollCount) {
@@ -69,11 +70,12 @@ angular
             });
         } else {
           $httpBackend
-            .when(mock.httpMethod, new Regex(mock.uri), mock.requestData)
+            .when(mock.httpMethod, uriRegExp, mock.requestData)
             .respond(mock.statusCode, mock.response, mockHeaders);
         }
 
-        // Make this http request now if required otherwise just resolve
+        // Make this HTTP request now if required otherwise just resolve
+        // TODO deprecated?
         if (mock.callInSetup) {
           var req = {method: mock.httpMethod, url: mock.uri};
           $http(req).success(function (response) {

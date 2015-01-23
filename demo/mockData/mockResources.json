@@ -1,11 +1,11 @@
 {
   "_default": [
-    "Basket/2items.json"
+    "cart/empty.json"
   ],
-  "noItems": [
-    "Basket/0items.json"
+  "someItems": [
+    "cart/someItems.json"
   ],
   "outOfStock": [
-    "Basket/outOfStock.json"
+    "cart/outOfStock.json"
   ]
 }

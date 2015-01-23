@@ -3,13 +3,11 @@
 module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-karma');
-  grunt.loadNpmTasks('grunt-open');
 
   grunt.registerTask('build', [
     'jshint',
@@ -31,9 +29,7 @@ module.exports = function (grunt) {
     'uglify:package'
   ]);
   grunt.registerTask('workflow:dev', [
-    'connect:dev',
     'build',
-    'open:dev',
     'watch:dev'
   ]);
 
@@ -122,40 +118,10 @@ module.exports = function (grunt) {
       }
     },
 
-    connect: {
-      options: {
-        hostname: '*'
-      },
-      dev: {
-        options: {
-          port: 9000,
-          base: '<%= app.build_dir %>',
-        }
-      },
-      package: {
-        options: {
-          port: 9001,
-          base: '<%= app.package_dir %>',
-        }
-      }
-    },
-
-    open: {
-      dev: {
-        url: 'http://127.0.0.1:<%= connect.dev.options.port %>'
-      },
-      package: {
-        url: 'http://127.0.0.1:<%= connect.package.options.port %>'
-      }
-    },
-
     watch: {
       dev: {
         files: ['<%= app.source_dir %>/**/*'],
-        tasks: ['build', 'test:dev'],
-        options: {
-          livereload: true
-        }
+        tasks: ['build', 'test:dev']
       }
     }
   });
