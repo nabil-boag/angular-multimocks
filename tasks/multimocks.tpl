@@ -3,9 +3,9 @@
 angular
   .module('scenario')
 
-  .config(['multimockDataProvider', function (multimockDataProvider) {
-    multimockDataProvider.setDefaultScenario('_default');
+  .config(['multimocksDataProvider', function (multimocksDataProvider) {
+    multimocksDataProvider.setDefaultScenario('_default');
     /* jshint ignore:start */
-    multimockDataProvider.setMockData(<%= scenarioData %>);
+    multimocksDataProvider.setMockData(<%= scenarioData %>);
     /* jshint ignore:end */
   }]);

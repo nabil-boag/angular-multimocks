@@ -3,12 +3,12 @@
 describe('multimocks', function () {
   var mockHttpBackend, mockWindow, multimocksDataProvider, multimocksData,
     multimocks, scenarioName, scenario1, scenario2, pollScenario, scenarios,
-    mockHeaders;
+    mockHeaders, mockUriRegExp;
 
   beforeEach(function () {
     scenario1 = [
       {
-        'uri': 'http://example.com/test',
+        'uri': '/test',
         'httpMethod': 'GET',
         'statusCode': 200,
         'response': {
@@ -19,7 +19,7 @@ describe('multimocks', function () {
 
     scenario2 = [
       {
-        'uri': 'http://example.com/test',
+        'uri': '/test',
         'httpMethod': 'GET',
         'statusCode': 200,
         'response': {
@@ -30,7 +30,7 @@ describe('multimocks', function () {
 
     pollScenario = [
       {
-        'uri': 'http://example.com/test',
+        'uri': '/test',
         'httpMethod': 'GET',
         'statusCode': 200,
         'poll': true,
@@ -55,6 +55,8 @@ describe('multimocks', function () {
     mockWindow = {location: {search: ''}};
 
     mockHeaders = {foo: 'bar'};
+
+    mockUriRegExp = new RegExp('^/test$');
   });
 
   describe('scenarioName', function () {
@@ -136,7 +138,7 @@ describe('multimocks', function () {
       // assert
       var mockResource = scenario2[0];
       expect(mockHttpBackend.when).toHaveBeenCalledWith(
-        mockResource.httpMethod, mockResource.uri, mockResource.requestData);
+        mockResource.httpMethod, mockUriRegExp, mockResource.requestData);
       expect(mockHttpBackend.respond).toHaveBeenCalledWith(
         mockResource.statusCode, mockResource.response, mockHeaders);
     });
@@ -176,7 +178,7 @@ describe('multimocks', function () {
       // assert
       var mockResource = scenario2[0];
       expect(mockHttpBackend.when).toHaveBeenCalledWith(
-        mockResource.httpMethod, mockResource.uri, mockResource.requestData);
+        mockResource.httpMethod, mockUriRegExp, mockResource.requestData);
       expect(mockHttpBackend.respond).toHaveBeenCalledWith(
         mockResource.statusCode, mockResource.response, mockHeaders);
     });
@@ -199,7 +201,7 @@ describe('multimocks', function () {
       // assert
       var mockResource = scenario2[0];
       expect(mockHttpBackend.when).toHaveBeenCalledWith(
-        mockResource.httpMethod, mockResource.uri, mockResource.requestData);
+        mockResource.httpMethod, mockUriRegExp, mockResource.requestData);
       expect(mockHttpBackend.respond)
         .toHaveBeenCalledWith(jasmine.any(Function));
     });

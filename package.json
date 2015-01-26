@@ -7,7 +7,7 @@
     "url": "git://github.com/wongatech/angular-multimocks"
   },
   "scripts": {
-    "test": "grunt build test:dev",
+    "test": "grunt build test",
     "postinstall": "bower install"
   },
   "dependencies": {
@@ -17,13 +17,11 @@
     "grunt": "~0.4.1",
     "grunt-contrib-clean": "~0.4.1",
     "grunt-contrib-concat": "~0.3.0",
-    "grunt-contrib-connect": "~0.5.0",
     "grunt-contrib-copy": "~0.4.1",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-contrib-uglify": "~0.2.0",
     "grunt-contrib-watch": "~0.5.3",
     "connect": "~2.9.0",
-    "grunt-open": "~0.2.2",
     "karma": "^0.12.16",
     "grunt-karma": "^0.8.3",
     "karma-coverage": "^0.2.1",
