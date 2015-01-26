@@ -31,6 +31,12 @@ cases. You may want responses for the following:
 | Shopping cart with a quick buy option | `/cart?scenario=quickBuyCart`   |
 | Shopping cart with out of stock items | `/cart?scenario=outOfStockCart` |
 
+Demo App
+--------
+
+See `demo/` for a demo app. Run `grunt` to generate the mocks, then open
+`index.html` in your browser.
+
 Usage
 -----
 
@@ -50,22 +56,7 @@ application:
 Mock Format
 -----------
 
-Mocks are organised into directories representing the available resources and
-files for various versions of the response.
-
-```
-.
-├── Account
-│   ├── loggedIn.json
-│   └── anonymous.json
-├── Orders
-│   └── _default.json
-├── Root
-│   └── _default.json
-└── mockResources.json
-```
-
-A resource file might look like this:
+Resource files look like this:
 
 ```json
 {
@@ -83,12 +74,12 @@ describes which version of each resource should be used for each scenario.
 ```json
 {
   "_default": [
-    "Root/_default.json",
-    "Account/anonymous.json",
-    "Orders/_default.json"
+    "root/_default.json",
+    "account/anonymous.json",
+    "orders/_default.json"
   ],
   "loggedIn": [
-    "Account/loggedIn.json"
+    "account/loggedIn.json"
   ]
 }
 ```
@@ -97,8 +88,8 @@ All scenarios inherit resources defined in `_default` unless they provide an
 override. Think of `_default` as the base class for scenarios.
 
 The example above defines 2 scenarios `_default` and `loggedIn`. `loggedIn` has
-the default versions of the `Root` and `Orders` resources, but overrides
-`Account`, using the version in `Account/loggedIn.json`.
+the default versions of the `root` and `orders` resources, but overrides
+`account`, using the version in `account/loggedIn.json`.
 
 Grunt Task
 ----------
@@ -169,6 +160,72 @@ the generated files in your app:
 <script src="build/scenarios/foo.js"></script>
 <script src="build/scenarios/bar.js"></script>
 ```
+
+HAL Plugin
+----------
+
+If your API conforms to [HAL](http://stateless.co/hal_specification.html),
+Angular Multimocks can generate links for you to speed development.
+
+Enable the plugin in your `Gruntfile.js`:
+
+```javascript
+multimocks: {
+  myApp: {
+    src: 'mocks',
+    dest: 'build/multimocks',
+    plugins: ['hal']
+  }
+}
+```
+
+Organise your mock response files into a file structure with a directory for
+each resource, e.g.:
+
+```
+.
+├── account
+│   ├── loggedIn.json
+│   └── anonymous.json
+├── orders
+│   └── _default.json
+├── root
+│   └── _default.json
+└── mockResources.json
+```
+
+Angular Multimocks will add a `_links` object to each response with all the
+known resources declared as available links:
+
+```json
+{
+  "httpMethod": "GET",
+  "statusCode": 200,
+  "response": {
+    "id": "foo",
+    "_links": {
+      "root": {
+        "rel": "root",
+        "method": "GET",
+        "href": "http://example.com/"
+      },
+      "account": {
+        "rel": "account",
+        "method": "GET",
+        "href": "http://example.com/account"
+      },
+      "orders": {
+        "rel": "orders",
+        "method": "GET",
+        "href": "http://example.com/orders"
+      }
+    }
+  }
+}
+```
+
+A `uri` will be generated for each resource. This value is used for the `href`
+field of each object in `_links`.
 
 `multimocksDataProvider`
 ------------------------
