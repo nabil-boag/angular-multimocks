@@ -34,8 +34,8 @@ cases. You may want responses for the following:
 Demo App
 --------
 
-See `demo/` for a demo app. Run `grunt` to generate the mocks, then open
-`index.html` in your browser.
+See `demo/` for a demo app. Inside the demo app, run `grunt` to generate the
+mocks, then open `index.html` in your browser.
 
 Usage
 -----
@@ -50,8 +50,31 @@ Include `angular-multimocks.js` or `angular-multimocks.min.js` in your
 application:
 
 ```html
-<script src="bower_components/angular-multimocks/js/angular-multimocks.min.js"></script>
+<script src="bower_components/angular-multimocks/app/package/js/angular-multimocks.min.js"></script>
 ```
+
+Angular Multimocks currently depends on Angular UI Router but will not in
+a future release. Include `angular-ui-router.js` or `angular-ui-router.min.js`
+in your application:
+
+```html
+<script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+```
+
+Angular Multimocks depends on Angular Mocks include `angular-multimocks.js`
+in your application:
+
+```html
+<script src="bower_components/angular-mocks/angular-mocks.js"></script>
+```
+
+Add `scenario` and `ngMockE2E` to your application:
+
+```javascript
+angular
+  .module('demo', ['scenario', 'ngMockE2E'])
+  // more code here...
+``` 
 
 Mock Format
 -----------
@@ -62,10 +85,18 @@ Resource files look like this:
 {
   "httpMethod": "GET",
   "statusCode": 200,
+  "uri": "/customer/cart",
   "response": {
     "id": "foo"
   }
 }
+```
+
+The `uri` property defines the URI that is being mocked in your application
+and can contain a regex:
+
+```
+"uri": "/customer/\\d*/cart"
 ```
 
 The manifest file `mockResources.json` defines the available scenarios and
@@ -111,13 +142,16 @@ Add it to your Grunt configuration:
 grunt.loadNpmTasks('angular-multimocks');
 
 // configuration for scenarios
-multimocks: {
-  myApp: {
-    src: 'mocks',
-    dest: 'build/multimocks.js',
-    template: 'myTemplate.tpl' // optional
-  }
-},
+grunt.initConfig({
+  multimocks: {
+    myApp: {
+      src: 'mocks',
+      dest: 'build/multimocks.js',
+      template: 'myTemplate.tpl' // optional
+    }
+  },
+  // other config here...
+});
 ```
 
 Once the task is run, `build/multimocks.js` will be generated containing all your
