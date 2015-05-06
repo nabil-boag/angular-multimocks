@@ -13,13 +13,11 @@
   ],
   "description": "Tools for managing mock data scenarios in AngularJS applications",
   "main": "app/package/js/angular-multimocks.min.js",
-  "devDependencies": {
-    "angular-mocks": "~1.2.0",
-    "angular-ui-router": "0.2.0"
-  },
   "dependencies": {
     "angular": "~1.2.0",
+    "angular-mocks": "~1.2.0",
     "angular-resource": "~1.2.0",
+    "angular-ui-router": "0.2.0",
     "angular-ui-utils": "~0.0.4",
     "lodash": "~2.4.1"
   },
