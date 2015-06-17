@@ -1,42 +1,67 @@
-/* global describe, beforeEach, jasmine, module, inject, it, xit, expect */
+/* global describe, beforeEach, jasmine, module, inject, it, expect */
+
 
 describe('multimocks', function () {
   var mockHttpBackend, mockWindow, multimocksDataProvider, multimocksData,
-    multimocks, scenarioName, scenario1, scenario2, pollScenario, scenarios,
-    mockHeaders, mockUriRegExp;
+    multimocks, scenario1, scenario2, pollScenario, delayedResponseScenario,
+    scenarios, mockHeaders, mockUriRegExp, regexScenario;
 
   beforeEach(function () {
     scenario1 = [
       {
-        'uri': '/test',
-        'httpMethod': 'GET',
-        'statusCode': 200,
-        'response': {
-          'scenario': 1,
+        uri: '/test',
+        httpMethod: 'GET',
+        statusCode: 200,
+        response: {
+          scenario: 'scenario1'
         }
       }
     ];
 
     scenario2 = [
       {
-        'uri': '/test',
-        'httpMethod': 'GET',
-        'statusCode': 200,
-        'response': {
-          'scenario': 1,
+        uri: '/test',
+        httpMethod: 'GET',
+        statusCode: 200,
+        response: {
+          scenario: 'scenario2'
+        }
+      }
+    ];
+
+    regexScenario = [
+      {
+        uri: '/test/\\d*/foo',
+        httpMethod: 'GET',
+        statusCode: 200,
+        responseDelay: 345,
+        response: {
+          scenario: 'regexScenario'
         }
       }
     ];
 
     pollScenario = [
       {
-        'uri': '/test',
-        'httpMethod': 'GET',
-        'statusCode': 200,
-        'poll': true,
-        'pollCount': 3,
-        'response': {
-          'scenario': 'poll',
+        uri: '/test',
+        httpMethod: 'GET',
+        statusCode: 200,
+        poll: true,
+        pollCount: 3,
+        response: {
+          scenario: 'poll'
+        }
+      }
+    ];
+
+    delayedResponseScenario = [
+      {
+        uri: '/delayed',
+        httpMethod: 'GET',
+        statusCode: 123,
+        responseDelay: 9876,
+        response: {
+          data: 'delayed'
         }
       }
     ];
@@ -52,31 +77,9 @@ describe('multimocks', function () {
     ]);
     mockHttpBackend.when.andReturn(mockHttpBackend);
 
-    mockWindow = {location: {search: ''}};
-
     mockHeaders = {foo: 'bar'};
 
     mockUriRegExp = new RegExp('^/test$');
-  });
-
-  describe('scenarioName', function () {
-    beforeEach(function () {
-      module('scenario');
-      inject(function (_scenarioName_) {
-        scenarioName = _scenarioName_;
-      });
-    });
-
-    it('should extract the scenario name from string similar to that ' +
-       'available in window.location.search', function () {
-      expect(scenarioName.extract('?scenario=foo')).toBe('foo');
-    });
-
-    it('should return undefined if no scenario name is available in the ' +
-       'input string', function () {
-      expect(scenarioName.extract('')).toBe(undefined);
-      expect(scenarioName.extract('?other=stuff')).toBe(undefined);
-    });
   });
 
   describe('multimocksDataProvider', function () {
@@ -133,7 +136,7 @@ describe('multimocks', function () {
       multimocksDataProvider.setHeaders(mockHeaders);
 
       // act
-      multimocks.setup();
+      multimocks.setup('_default');
 
       // assert
       var mockResource = scenario2[0];
@@ -204,6 +207,233 @@ describe('multimocks', function () {
         mockResource.httpMethod, mockUriRegExp, mockResource.requestData);
       expect(mockHttpBackend.respond)
         .toHaveBeenCalledWith(jasmine.any(Function));
+    });
+  });
+
+  describe('currentScenario', function () {
+    var currentScenario;
+
+    beforeEach(module('scenario',
+      function ($provide) {
+        mockWindow = {location: {search: ''}};
+        // Setup mocks
+        $provide.value('$window', mockWindow);
+      }));
+
+    beforeEach(inject(function (_currentScenario_) {
+      currentScenario = _currentScenario_;
+    }));
+
+    describe('getName', function () {
+      it('should return the scenario name if it is in the path', function () {
+        // Arrange
+        mockWindow.location.search = '?scenario=foo';
+
+        // Act - Assert
+        expect(currentScenario.getName()).toBe('foo');
+      });
+
+      it('should return default if no scenario name is in the path',
+        function () {
+          // Arrange
+          mockWindow.location.search = '';
+
+          // Act - Assert
+          expect(currentScenario.getName()).toBe('_default');
+        });
+
+      it('should return default if other no scenario name is in the path, ' +
+        'but other items are',
+        function () {
+          // Arrange
+          mockWindow.location.search = '?other=stuff';
+
+          // Act - Assert
+          expect(currentScenario.getName()).toBe('_default');
+        });
+    });
+  });
+
+  describe('scenarioMocks', function() {
+    var scenarioMocks,
+      currentScenario,
+      $log;
+
+    beforeEach(function() {
+      module('scenario', function($provide) {
+        $provide.value('multimocksData', {
+          getMockData: jasmine.createSpy().andReturn(scenarios),
+          getDefaultScenario: jasmine.createSpy(),
+        });
+        $provide.value('$log', {
+          log: jasmine.createSpy()
+        });
+        $provide.value('currentScenario', {
+          getName: jasmine.createSpy()
+        });
+        $provide.value('multimocks', {
+          setup: jasmine.createSpy()
+        });
+      });
+
+      inject(function (_scenarioMocks_, _$log_, _multimocksData_,
+        _currentScenario_) {
+        scenarioMocks = _scenarioMocks_;
+        multimocksData = _multimocksData_;
+        currentScenario = _currentScenario_;
+        $log = _$log_;
+      });
+    });
+
+    describe('getMocks', function() {
+      it('should return mocks for a valid scenario', function () {
+        // Act
+        var mocks = scenarioMocks.getMocks('scenario1');
+
+        // Assert
+        expect(mocks).toBe(scenario1);
+      });
+
+      it('should return undefined for a scenario that doesn\'t exist',
+        function () {
+          // Act
+          var mocks = scenarioMocks.getMocks('badScenario');
+
+          // Assert
+          expect(mocks).toBe(undefined);
+        });
+
+      it('should log when no mocks can be found for a specified scenario',
+        function () {
+          // Act
+          var mocks = scenarioMocks.getMocks('notFoundScenario');
+
+          // Assert
+          expect($log.log).toHaveBeenCalledWith(
+            'Mocks not found for scenario: notFoundScenario');
+        });
+    });
+
+    describe('getMocksForCurrentScenario', function() {
+      it('should get mocks for the current scenario', function () {
+        // Arrange
+        scenarioMocks.getMocks = jasmine.createSpy().andReturn({data: 'value'});
+        currentScenario.getName.andReturn('scenario3');
+
+        // Act
+        var mocks = scenarioMocks.getMocksForCurrentScenario();
+
+        // Assert
+        expect(scenarioMocks.getMocks).toHaveBeenCalledWith('scenario3');
+        expect(mocks).toEqual({data: 'value'});
+      });
+    });
+
+    describe('getDelayForResponse', function() {
+     it('should return 0 when a mock isn\'t set for a response', function () {
+        // Arrange
+        scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
+          .andReturn(scenario1);
+        currentScenario.getName.andReturn('scenario3');
+        var mockedResponse = {
+          config: {
+            method: 'UNKNOWN',
+            url: '/different/path'
+          }
+        };
+
+        // Act
+        var delay = scenarioMocks.getDelayForResponse(mockedResponse);
+
+        // Assert
+        expect(delay).toEqual(0);
+      });
+
+      it('should return 0 when a mock without a delay is set for a response',
+        function () {
+          // Arrange
+          scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
+            .andReturn(scenario1);
+          currentScenario.getName.andReturn('scenario3');
+          var mockedResponse = {
+            config: {
+              method: 'GET',
+              url: '/test'
+            }
+          };
+
+          // Act
+          var delay = scenarioMocks.getDelayForResponse(mockedResponse);
+
+          // Assert
+          expect(delay).toEqual(0);
+        });
+
+      it('should return delay when a mock with a delay is set for a response',
+        function () {
+          // Arrange
+          scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
+            .andReturn(delayedResponseScenario);
+          currentScenario.getName.andReturn('delayedResponseScenario');
+          var mockedResponse = {
+            config: {
+              method: 'GET',
+              url: '/delayed'
+            }
+          };
+
+          // Act
+          var delay = scenarioMocks.getDelayForResponse(mockedResponse);
+
+          // Assert
+          expect(delay).toBe(9876);
+        });
+
+      it('should return delay for a mock that has a regex for URL',
+        function () {
+          // Arrange
+          scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
+            .andReturn(regexScenario);
+          currentScenario.getName.andReturn('regexScenario');
+          var mockedResponse = {
+            config: {
+              method: 'GET',
+              url: '/test/123/foo'
+            }
+          };
+
+          // Act
+          var delay = scenarioMocks.getDelayForResponse(mockedResponse);
+
+          // Assert
+          expect(delay).toBe(345);
+        });
+    });
+  });
+
+  describe('run', function(){
+    var currentScenario;
+
+    beforeEach(function() {
+      module('scenario', function($provide) {
+        $provide.value('multimocks', {
+          setup: jasmine.createSpy()
+        });
+
+        $provide.value('currentScenario', {
+          getName: jasmine.createSpy().andReturn('myScenarioName')
+        });
+      });
+
+      inject(function (_multimocks_, _currentScenario_) {
+        multimocks = _multimocks_;
+        currentScenario = _currentScenario_;
+      });
+    });
+
+    it('should set up mocks with the current scenario name', function () {
+      // Assert
+      expect(multimocks.setup).toHaveBeenCalledWith('myScenarioName');
     });
   });
 });

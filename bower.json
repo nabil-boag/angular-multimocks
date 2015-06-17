@@ -1,6 +1,6 @@
 {
   "name": "angular-multimocks",
-  "version": "0.5.0",
+  "version": "0.5.2",
   "authors": [
     {
       "name": "Ben Godfrey",
@@ -9,6 +9,10 @@
     {
       "name": "Ben Eppel",
       "email": "b.eppel@gmail.com"
+    },
+    {
+      "name": "Nabil Boag",
+      "email": "angular@nabilboag.co.uk"
     }
   ],
   "description": "Tools for managing mock data scenarios in AngularJS applications",

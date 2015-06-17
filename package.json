@@ -1,6 +1,6 @@
 {
   "name": "angular-multimocks",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Tools for managing mock data scenarios in AngularJS applications",
   "repository": {
     "type": "git",
@@ -23,7 +23,7 @@
     "grunt-contrib-watch": "~0.5.3",
     "connect": "~2.9.0",
     "karma": "^0.12.16",
-    "grunt-karma": "^0.8.3",
+    "grunt-karma": "~0.10.1",
     "karma-coverage": "^0.2.1",
     "karma-ng-scenario": "^0.1.0",
     "karma-jasmine": "^0.1.5",
