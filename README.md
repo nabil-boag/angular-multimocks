@@ -74,7 +74,7 @@ Add `scenario` and `ngMockE2E` to your application:
 angular
   .module('demo', ['scenario', 'ngMockE2E'])
   // more code here...
-``` 
+```
 
 Mock Format
 -----------
@@ -97,6 +97,16 @@ and can contain a regex:
 
 ```
 "uri": "/customer/\\d*/cart"
+```
+
+### Delayed responses
+
+In some scenarios you may want to simulate a delay getting a response for a
+resource. Mocks accept an optional `responseDelay` property that will delay
+the response for the specified time in milliseconds:
+
+```
+"responseDelay": 500
 ```
 
 The manifest file `mockResources.json` defines the available scenarios and
