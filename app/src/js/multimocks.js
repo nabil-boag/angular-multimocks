@@ -1,4 +1,4 @@
-/* global angular, _, console*/
+/* global angular, _ */
 
 angular
   .module('scenario', ['ui.router', 'ngMockE2E', 'multimocks.responseDelay'])
@@ -105,31 +105,6 @@ angular
     }
   ])
 
-  .config([
-    '$stateProvider',
-    function ($stateProvider) {
-      $stateProvider.state('scenario', {
-        url: '/scenario/:state/:mock',
-        controller: 'scenarioController'
-      });
-    }
-  ])
-
-  .controller('scenarioController', [
-    '$state',
-    '$stateParams',
-    'multimocks',
-    function ($state, $stateParams, multimocks) {
-      if (!_.isUndefined($stateParams.mock)) {
-        multimocks.setup($stateParams.mock).then(function () {
-          if (!_.isUndefined($stateParams.state)) {
-            $state.transitionTo($stateParams.state);
-          }
-        });
-      }
-    }
-  ])
-
   .factory('currentScenario', [
     '$window',
     'multimocksData',
@@ -180,7 +155,6 @@ angular
           }
 
           if (scenarioToLoad) {
-            // Only write to console if scenario actively specified.
             $log.log('Mocks not found for scenario: ' + scenarioToLoad);
           }
         },

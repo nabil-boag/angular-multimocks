@@ -1,7 +1,7 @@
 /* global angular */
 
 angular
-  .module('multimocks.responseDelay', ['ui.router', 'ngMockE2E'])
+  .module('multimocks.responseDelay', [])
 
   .factory('responseDelay', [
     '$q',

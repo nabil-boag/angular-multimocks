@@ -13,7 +13,7 @@ describe('multimocks', function () {
         httpMethod: 'GET',
         statusCode: 200,
         response: {
-          scenario: 1
+          scenario: 'scenario1'
         }
       }
     ];
@@ -24,7 +24,7 @@ describe('multimocks', function () {
         httpMethod: 'GET',
         statusCode: 200,
         response: {
-          scenario: 1
+          scenario: 'scenario2'
         }
       }
     ];
@@ -36,7 +36,7 @@ describe('multimocks', function () {
         statusCode: 200,
         responseDelay: 345,
         response: {
-          scenario: 1
+          scenario: 'regexScenario'
         }
       }
     ];
@@ -61,7 +61,7 @@ describe('multimocks', function () {
         statusCode: 123,
         responseDelay: 9876,
         response: {
-          data: 'poll'
+          data: 'delayed'
         }
       }
     ];
@@ -76,8 +76,6 @@ describe('multimocks', function () {
       'respond'
     ]);
     mockHttpBackend.when.andReturn(mockHttpBackend);
-
-    mockWindow = {location: {search: ''}};
 
     mockHeaders = {foo: 'bar'};
 
@@ -213,24 +211,23 @@ describe('multimocks', function () {
   });
 
   describe('currentScenario', function () {
-    var currentScenario,
-      $window;
+    var currentScenario;
 
     beforeEach(module('scenario',
       function ($provide) {
+        mockWindow = {location: {search: ''}};
         // Setup mocks
         $provide.value('$window', mockWindow);
       }));
 
-    beforeEach(inject(function (_currentScenario_, _$window_) {
+    beforeEach(inject(function (_currentScenario_) {
       currentScenario = _currentScenario_;
-      $window = _$window_;
     }));
 
     describe('getName', function () {
       it('should return the scenario name if it is in the path', function () {
         // Arrange
-        $window.location.search = '?scenario=foo';
+        mockWindow.location.search = '?scenario=foo';
 
         // Act - Assert
         expect(currentScenario.getName()).toBe('foo');
@@ -239,7 +236,7 @@ describe('multimocks', function () {
       it('should return default if no scenario name is in the path',
         function () {
           // Arrange
-          $window.location.search = '';
+          mockWindow.location.search = '';
 
           // Act - Assert
           expect(currentScenario.getName()).toBe('_default');
@@ -249,7 +246,7 @@ describe('multimocks', function () {
         'but other items are',
         function () {
           // Arrange
-          $window.location.search = '?other=stuff';
+          mockWindow.location.search = '?other=stuff';
 
           // Act - Assert
           expect(currentScenario.getName()).toBe('_default');

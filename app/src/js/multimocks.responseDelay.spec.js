@@ -72,9 +72,6 @@ describe('multimocks.responseDelay', function () {
 
       it('should call $timeout with a function that resolves promise',
         function () {
-          // Arrange
-          scenarioMocks.getDelayForResponse.andReturn(123);
-
           // Act
           responseDelay.response('foo');
           /*
