@@ -1,7 +1,7 @@
-/* global angular, _, console */
+/* global angular, _ */
 
 angular
-  .module('scenario', ['ui.router'])
+  .module('scenario', ['ui.router', 'ngMockE2E', 'multimocks.responseDelay'])
 
   .provider('multimocksData', function () {
     var mockData = {},
@@ -46,7 +46,8 @@ angular
     '$http',
     '$httpBackend',
     'multimocksData',
-    function ($q, $http, $httpBackend, multimocksData) {
+    'scenarioMocks',
+    function ($q, $http, $httpBackend, multimocksData, scenarioMocks) {
       var setupHttpBackendForMockResource = function (deferred, mock) {
         var mockHeaders = multimocksData.getHeaders(),
           uriRegExp = new RegExp('^' + mock.uri + '$');
@@ -89,23 +90,14 @@ angular
 
       return {
         setup: function (scenarioName) {
-          var deferred = $q.defer(),
-            actualScenarioName = scenarioName ||
-              multimocksData.getDefaultScenario(),
-            mockData = multimocksData.getMockData();
+          var deferred = $q.defer();
 
-          if (_.has(mockData, actualScenarioName)) {
-            var scenario = mockData[actualScenarioName];
-
-            // Set mock for each item.
-            _.forOwn(scenario, function (mock) {
+          // Set mock for each item.
+          _.forOwn(scenarioMocks.getMocks(scenarioName),
+            function (mock) {
               setupHttpBackendForMockResource(deferred, mock);
-            });
-          }
-          else if (scenarioName) {
-            // only write to console if scenario actively specified
-            console.log('Mocks not found for: ' + scenarioName);
-          }
+            }
+          );
 
           return deferred.promise;
         }
@@ -113,36 +105,14 @@ angular
     }
   ])
 
-  .config([
-    '$stateProvider',
-    function ($stateProvider) {
-      $stateProvider.state('scenario', {
-        url: '/scenario/:state/:mock',
-        controller: 'scenarioController'
-      });
-    }
-  ])
+  .factory('currentScenario', [
+    '$window',
+    'multimocksData',
+    function ($window, multimocksData) {
 
-  .controller('scenarioController', [
-    '$state',
-    '$stateParams',
-    'multimocks',
-    function ($state, $stateParams, multimocks) {
-      if (!_.isUndefined($stateParams.mock)) {
-        multimocks.setup($stateParams.mock).then(function () {
-          if (!_.isUndefined($stateParams.state)) {
-            $state.transitionTo($stateParams.state);
-          }
-        });
-      }
-    }
-  ])
-
-  .factory('scenarioName', function () {
-    return {
-      extract: function (search) {
-        if (search.indexOf('scenario') !== -1) {
-          var scenarioParams = search
+      function getScenarioFromPath (path) {
+        if (path.indexOf('scenario') !== -1) {
+          var scenarioParams = path
             .slice(1)
             .split('&')
             .map(function (s) { return s.split('='); })
@@ -153,16 +123,98 @@ angular
           return undefined;
         }
       }
-    };
-  })
+
+      return {
+        getName: function() {
+          var scenarioFromURL = getScenarioFromPath($window.location.search);
+          if (_.isUndefined(scenarioFromURL)) {
+            return multimocksData.getDefaultScenario();
+          }
+          return scenarioFromURL;
+        }
+      };
+    }
+  ])
+
+  .factory('scenarioMocks', [
+    '$log',
+    'multimocksData',
+    'currentScenario',
+    function ($log, multimocksData, currentScenario) {
+      var mockData = multimocksData.getMockData();
+
+      function urlMatchesRegex(url, regex){
+        var pattern = new RegExp(regex);
+        return pattern.test(url);
+      }
+
+      var scenarioMocks =  {
+        getMocks: function (scenarioToLoad) {
+          if (_.has(mockData, scenarioToLoad)) {
+            return mockData[scenarioToLoad];
+          }
+
+          if (scenarioToLoad) {
+            $log.log('Mocks not found for scenario: ' + scenarioToLoad);
+          }
+        },
+        getMocksForCurrentScenario: function () {
+          return scenarioMocks.getMocks(currentScenario.getName());
+        },
+        getDelayForResponse: function (response) {
+          var availableMocks = scenarioMocks.getMocksForCurrentScenario();
+          var matchedMockIndex = _.findIndex(availableMocks, function(mock) {
+            var sameURL = urlMatchesRegex(response.config.url, mock.uri);
+            var sameMethod = (mock.httpMethod === response.config.method);
+            return sameMethod && sameURL;
+          });
+          if (matchedMockIndex < 0) {
+            return 0;
+          }
+          return availableMocks[matchedMockIndex].responseDelay || 0;
+        }
+      };
+      return scenarioMocks;
+    }
+  ])
 
   .run([
-    '$window',
     'multimocks',
-    'scenarioName',
-    function ($window, multimocks, scenarioName) {
+    'currentScenario',
+    function (multimocks, currentScenario) {
       // load a scenario based on URL string,
       // e.g. http://example.com/?scenario=scenario1
-      multimocks.setup(scenarioName.extract($window.location.search));
+      multimocks.setup(currentScenario.getName());
+    }
+  ]);
+
+/* global angular */
+
+angular
+  .module('multimocks.responseDelay', [])
+
+  .factory('responseDelay', [
+    '$q',
+    '$timeout',
+    'scenarioMocks',
+    function ($q, $timeout, scenarioMocks) {
+      return {
+        response: function (response) {
+          var delayedResponse = $q.defer();
+
+          $timeout(function () {
+            delayedResponse.resolve(response);
+          }, scenarioMocks.getDelayForResponse(response));
+
+          return delayedResponse.promise;
+        }
+      };
+    }
+  ])
+
+  .config([
+    '$httpProvider',
+    function ($httpProvider) {
+      $httpProvider.interceptors.push('responseDelay');
     }
   ]);
