@@ -95,9 +95,10 @@ and can contain a regex:
 
 ### Delayed responses
 
-In some scenarios you may want to simulate a delay getting a response for a
-resource. Mocks accept an optional `responseDelay` property that will delay
-the response for the specified time in milliseconds:
+In some scenarios you may want to simulate a server/network delay.
+This is done by intercepting the HTTP response and delaying it.
+Mocks accept an optional `responseDelay` property that will delay
+the HTTP response for the specified time in milliseconds:
 
 ```
 "responseDelay": 500
