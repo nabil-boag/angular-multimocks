@@ -1,0 +1,14 @@
+{
+  "_default": [
+    "cart/empty.json"
+  ],
+  "someItems": [
+    "cart/someItems.json"
+  ],
+  "outOfStock": [
+    "cart/outOfStock.json"
+  ],
+  "slowResponse": [
+    "cart/slowResponse.json"
+  ]
+}

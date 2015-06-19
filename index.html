@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Angular Multimocks Demo</title>
+
+    <!-- Bootstrap -->
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="bower_components/lodash/dist/lodash.min.js"></script>
+    <script src="bower_components/angular-mocks/angular-mocks.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script src="bower_components/angular-multimocks/app/package/js/angular-multimocks.js"></script>
+    <script src="mockOutput.js"></script>
+
+    <style>
+      .scenarios li a:link {
+        text-decoration: none;
+      }
+      .scenarios li a {
+        color: white;
+      }
+      .scenarios li a i {
+        margin-right: 2px;
+      }
+
+      .ng-cloak {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="page-header">
+        <div class="media">
+          <a class="pull-left" href="#">
+            <img src="logo.png" width="100">
+          </a>
+
+          <div class="media-body">
+            <h1 class="text-muted">Angular Multimocks</h1>
+          </div>
+        </div>
+      </div>
+
+      <div class="">
+        <p class="lead">
+          Angular Multimocks lets you test how your app behaves with different
+          responses from an API.
+        </p>
+
+        <p class="text-center">
+          <iframe src="http://ghbtns.com/github-btn.html?user=wongatech&repo=angular-multimocks&type=watch&count=true"
+                  allowtransparency="true" frameborder="0" scrolling="0"
+                  width="110" height="20"></iframe>
+          <iframe src="http://ghbtns.com/github-btn.html?user=wongatech&repo=angular-multimocks&type=fork&count=true"
+                  allowtransparency="true" frameborder="0" scrolling="0"
+                  width="110" height="20"></iframe>
+          <iframe src="http://ghbtns.com/github-btn.html?user=wongatech&repo=angular-multimocks&type=follow&count=true"
+                  allowtransparency="true" frameborder="0" scrolling="0"
+                  width="200" height="20"></iframe>
+          <a class="twitter-share-button"
+            href="https://twitter.com/intent/tweet" data-count="none">
+            Tweet</a>
+          <a href="https://twitter.com/wongatech"
+             class="twitter-follow-button">Follow
+            @wongatech</a>
+          <script>
+            window.twttr = (function(d, s, id) {
+              var js, fjs = d.getElementsByTagName(s)[0],
+                t = window.twttr || {};
+              if (d.getElementById(id)) return t;
+              js = d.createElement(s);
+              js.id = id;
+              js.src = "https://platform.twitter.com/widgets.js";
+              fjs.parentNode.insertBefore(js, fjs);
+
+              t._e = [];
+              t.ready = function(f) {
+                t._e.push(f);
+              };
+
+              return t;
+            }(document, "script", "twitter-wjs"));
+          </script>
+        </p>
+      </div>
+
+      <div class="row marketing">
+        <div ng-app="demo" ng-controller="demoCtrl" class="ng-cloak">
+          <h2>Scenarios</h2>
+
+          <ul class="list-inline scenarios">
+            <li class="btn btn-success">
+              <a href="?">
+                <i class="glyphicon glyphicon-refresh"></i>
+                <span>Empty cart</span>
+              </a>
+            </li>
+            <li class="btn btn-success">
+              <a href="?scenario=someItems">
+                <i class="glyphicon glyphicon-refresh"></i>
+                <span>Some Items</span>
+              </a>
+            </li>
+            <li class="btn btn-success">
+              <a href="?scenario=outOfStock">
+                <i class="glyphicon glyphicon-refresh"></i>
+                <span>Out of stock items</span>
+              </a>
+            </li>
+            <li class="btn btn-success">
+              <a href="?scenario=slowResponse">
+                <i class="glyphicon glyphicon-refresh"></i>
+                <span>Response with a delay</span>
+              </a>
+            </li>
+          </ul>
+          <div class="container">
+            <h1>Awesome Games</h1>
+          </div>
+          <div class="container">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Videogame</th>
+                  <th>Year</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="game in games | orderBy:'position'">
+                  <th>{{ game.position }}</th>
+                  <th>{{ game.name }}</th>
+                  <th>{{ game.year }}</th>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="footer text-center small" style="margin:20px;">
+        <p>© Wonga 2015 -
+          <a href="http://tech.wonga.com" role="button">
+            Wonga tech website
+          </a>
+        </p>
+      </div>
+    </div>
+
+
+
+    <script>
+      angular
+        .module('demo', ['scenario', 'ngMockE2E'])
+        .controller('demoCtrl', ['$scope', '$http', function ($scope, $http) {
+          $scope.games = [];
+          $http.get('/games').then(function (response) {
+            $scope.games = response.data;
+          });
+        }]);
+      [{"name":"The Legend of Zelda: Majora's Mask","year":2000},{"name":"Metal Gear Solid","year":1998},{"name":"Resident Evil 4","year":2005},{"name":"Star Wars: Knights of the Old Republic","year":2003},{"name":"Half-Life 2","year":2004},{"name":"Shenmue II","year":2001},{"name":"Mass Effect 2","year":2010},{"name":"Metal Gear Solid 4: Guns of the Patriots","year":2008},{"name":"Super Mario Galaxy 2","year":2010},{"name":"Kingdom Hearts II","year":2005},{"name":"Heavy Rain","year":2010},{"name":"Fallout 3","year":2008},{"name":"Metal Gear Solid 3: Subsistence","year":2005},{"name":"BioShock","year":2007},{"name":"The Legend of Zelda: Ocarina of Time","year":1998},{"name":"Half-Life 2: Episode Two","year":2007},{"name":"Portal 2","year":2011},{"name":"Yakuza 3","year":2009},{"name":"The Legend of Zelda: Twilight Princess","year":2006},{"name":"Grand Theft Auto V","year":2013},{"name":"Grand Theft Auto: San Andreas","year":2004},{"name":"Mass Effect","year":2007},{"name":"Tomb Raider","year":2013},{"name":"Batman: Arkham City","year":2011},{"name":"Mass Effect 3","year":2012},{"name":"The Last of Us","year":2013},{"name":"Super Smash Bros. Brawl","year":2008},{"name":"Uncharted 2: Among Thieves","year":2009},{"name":"Grand Theft Auto IV","year":2008},{"name":"Metal Gear Solid 2: Sons of Liberty","year":2001},{"name":"Super Smash Bros. Melee","year":2001},{"name":"Star Wars: Knights of the Old Republic II - The Sith Lords","year":2004},{"name":"Gears of War 2","year":2008},{"name":"Silent Hill 3","year":2003},{"name":"Splinter Cell: Chaos Theory","year":2005},{"name":"Super Mario Bros.","year":1985},{"name":"Batman: Arkham Asylum","year":2009},{"name":"The Legend of Zelda","year":1986},{"name":"God of War II","year":2007},{"name":"LittleBigPlanet","year":2008},{"name":"Assassin's Creed II","year":2009},{"name":"Shin Megami Tensei: Persona 4","year":2008},{"name":"The Elder Scrolls V: Skyrim","year":2011},{"name":"Uncharted 3: Drake's Deception","year":2011},{"name":"Portal","year":2007},{"name":"Infamous 2","year":2011},{"name":"Splinter Cell","year":2002},{"name":"Ratchet & Clank: Going Commando","year":2003},{"name":"Gran Turismo 3: A-Spec","year":2001},{"name":"Metroid Prime 3: Corruption","year":2007},{"name":"Tomb Raider II Starring Lara Croft","year":1997},{"name":"Grand Theft Auto IV: The Ballad of Gay Tony","year":2009},{"name":"Beyond: Two Souls","year":2013},{"name":"Halo 3","year":2007},{"name":"The Elder Scrolls IV: Oblivion","year":2006},{"name":"Uncharted: Drake's Fortune","year":2007},{"name":"Devil May Cry","year":2001},{"name":"Ratchet & Clank Future: Tools of Destruction","year":2007},{"name":"LittleBigPlanet 2","year":2011},{"name":"Bully","year":2006},{"name":"Splinter Cell: Conviction","year":2010},{"name":"God of War III","year":2010},{"name":"Half-Life 2: Episode One","year":2006},{"name":"Grand Theft Auto: Vice City","year":2002},{"name":"Prince of Persia: The Sands of Time","year":2003},{"name":"Fallout: New Vegas","year":2010},{"name":"Assassin's Creed","year":2007},{"name":"Jak 3","year":2004},{"name":"Soulcalibur II","year":2003},{"name":"Splinter Cell: Pandora Tomorrow","year":2004},{"name":"Grand Theft Auto 3","year":2001},{"name":"Gears of War 3","year":2011},{"name":"Deus Ex: Human Revolution","year":2011},{"name":"L.A. Noire","year":2011},{"name":"The Simpsons: Hit & Run","year":2003},{"name":"Ratchet & Clank","year":2002},{"name":"Super C","year":1988},{"name":"Saints Row IV","year":2013},{"name":"Max Payne","year":2001},{"name":"Mercenaries: Playground of Destruction","year":2005},{"name":"Pikmin 3","year":2013},{"name":"Call of Duty 4: Modern Warfare","year":2007},{"name":"Grand Theft Auto IV: The Lost and Damned","year":2009},{"name":"God of War: Ghost of Sparta","year":2010},{"name":"Tekken Tag Tournament 2","year":2012},{"name":"Halo 2","year":2004},{"name":"Heavenly Sword","year":2007},{"name":"Crash Bandicoot: Warped","year":1998},{"name":"Max Payne 2: The Fall of Max Payne","year":2003},{"name":"The Legend of Zelda: The Wind Waker","year":2002},{"name":"Red Dead Redemption","year":2010},{"name":"Virtua Fighter 5","year":2007},{"name":"Halo","year":2001},{"name":"Kingdom Hearts","year":2002},{"name":"Resistance: Fall of Man","year":2006},{"name":"Dead or Alive 3","year":2001},{"name":"Ninja Gaiden 3","year":2012},{"name":"Sonic the Hedgehog","year":1991},{"name":"ZombiU","year":2012},{"name":"ESPN NFL 2K5","year":2004}];
+    </script>
+  </body>
+</html>

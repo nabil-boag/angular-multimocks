@@ -1,0 +1,8 @@
+{
+  "name": "angular-multimocks-demo",
+  "dependencies": {
+    "angular": "~1.2.0",
+    "angular-multimocks": "~0.5.4",
+    "bootstrap": "~3.2.0"
+  }
+}
