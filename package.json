@@ -1,0 +1,15 @@
+{
+  "name": "angular-multimocks-demo",
+  "version": "0.0.1",
+  "description": "Demo page for angular-multimocks",
+  "main": "Gruntfile.js",
+  "dependencies": {
+    "angular-multimocks": "^0.5.4",
+    "grunt": "^0.4.5"
+  },
+  "devDependencies": {},
+  "bugs": {
+    "url": "https://github.com/wongatech/angular-multimocks/issues"
+  },
+  "homepage": "https://github.com/wongatech/angular-multimocks"
+}

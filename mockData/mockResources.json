@@ -1,0 +1,11 @@
+{
+  "_default": [
+    "games/empty.json"
+  ],
+  "someGames": [
+    "games/someGames.json"
+  ],
+  "slowResponse": [
+    "games/slowResponse.json"
+  ]
+}

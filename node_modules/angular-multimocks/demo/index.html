@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html ng-app="demo">
+  <head>
+    <meta charset="utf-8">
+    <title>Angular Scenario Demo</title>
+  </head>
+
+  <body ng-controller="demoCtrl">
+    <div>
+      <h1>Angular Scenario Demo</h1>
+
+      <h2>Scenarios</h2>
+
+      <ul>
+        <li><a href="?">Empty cart</a></li>
+        <li><a href="?scenario=someItems">2 items in cart</a></li>
+        <li><a href="?scenario=outOfStock">Out of stock items</a></li>
+        <li><a href="?scenario=slowResponse">Response with a delay</a></li>
+      </ul>
+
+      <h2>Response</h2>
+
+      <pre>{{method}} {{uri}}</pre>
+
+      <pre>{{data | json}}</pre>
+    </div>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.10/angular.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.10/angular-mocks.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.13/angular-ui-router.min.js"></script>
+    <script src="../app/src/js/multimocks.js"></script>
+    <script src="../app/src/js/multimocks.responseDelay.js"></script>
+    <script src="mockOutput.js"></script>
+
+    <script>
+      // simple app which makes a request and displays the results in the
+      // template
+      angular
+        .module('demo', ['scenario', 'ngMockE2E'])
+        .config(['$stateProvider', function ($stateProvider) {
+          $stateProvider.state('demo', {
+            url: '/demo',
+            controller: 'demoCtrl',
+          });
+        }])
+        .controller('demoCtrl', ['$scope', '$http', function ($scope, $http) {
+          $scope.values = {};
+          $scope.method = 'GET';
+          $scope.uri = '/customer/123/cart';
+          $http.get($scope.uri).then(function (response) {
+            $scope.data = response.data;
+          });
+        }]);
+   </script>
+ </body>
+</html>

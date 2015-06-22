@@ -112,15 +112,9 @@
               </a>
             </li>
             <li class="btn btn-success">
-              <a href="?scenario=someItems">
+              <a href="?scenario=someGames">
                 <i class="glyphicon glyphicon-refresh"></i>
                 <span>Some Items</span>
-              </a>
-            </li>
-            <li class="btn btn-success">
-              <a href="?scenario=outOfStock">
-                <i class="glyphicon glyphicon-refresh"></i>
-                <span>Out of stock items</span>
               </a>
             </li>
             <li class="btn btn-success">
@@ -131,20 +125,21 @@
             </li>
           </ul>
           <div class="container">
-            <h1>Awesome Games</h1>
+            <h1>Great Games</h1>
           </div>
           <div class="container">
-            <table class="table table-striped">
+            <div ng-show="loading"  class="loader">Loading...</div>
+            <table ng-hide="loading" class="table table-striped">
               <thead>
                 <tr>
                   <th>#</th>
                   <th>Videogame</th>
-                  <th>Year</th>
+                  <th>Release Year</th>
                 </tr>
               </thead>
               <tbody>
                 <tr ng-repeat="game in games | orderBy:'position'">
-                  <th>{{ game.position }}</th>
+                  <th>{{$index + 1}}</th>
                   <th>{{ game.name }}</th>
                   <th>{{ game.year }}</th>
                 </tr>
@@ -167,8 +162,10 @@
         .module('demo', ['scenario', 'ngMockE2E'])
         .controller('demoCtrl', ['$scope', '$http', function ($scope, $http) {
           $scope.games = [];
+          $scope.loading = true;
           $http.get('/games').then(function (response) {
-            $scope.games = response.data;
+            $scope.loading = false;
+            $scope.games = response.data.games;
           });
         }]);
     </script>

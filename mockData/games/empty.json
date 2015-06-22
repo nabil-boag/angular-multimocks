@@ -1,0 +1,8 @@
+{
+  "httpMethod": "GET",
+  "statusCode": 200,
+  "uri": "/games",
+  "response": {
+    "games": []
+  }
+}
