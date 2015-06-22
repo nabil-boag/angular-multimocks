@@ -1,8 +1,6 @@
 Angular Multimocks
 ==================
 
-[![Build Status](https://travis-ci.org/wongatech/angular-multimocks.svg?branch=master)](https://travis-ci.org/wongatech/angular-multimocks)
-
 Angular Multimocks lets you test how your app behaves with different responses
 from an API.
 
@@ -16,6 +14,15 @@ parameter: `?scenario=foo`.
 You can use Angular Multimocks to quickly test your app works in all situations
 while developing or to provide mock data for a suite of automated acceptance
 tests.
+
+Demo
+----
+<http://tech.wonga.com/angular-multimocks/>
+
+
+Travis Status
+-------------
+[![Build Status](https://travis-ci.org/wongatech/angular-multimocks.svg?branch=master)](https://travis-ci.org/wongatech/angular-multimocks)
 
 Example Use Case
 ----------------
