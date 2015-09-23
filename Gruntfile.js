@@ -7,10 +7,16 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-jscs');
+  grunt.loadNpmTasks('grunt-open');
   grunt.loadNpmTasks('grunt-karma');
+
+  var os = require('os');
 
   grunt.registerTask('build', [
     'jshint',
+    'jscs',
     'clean:build',
     'copy:build'
   ]);
@@ -29,34 +35,50 @@ module.exports = function (grunt) {
     'uglify:package'
   ]);
   grunt.registerTask('workflow:dev', [
+    'connect:dev',
     'build',
+    'open:dev',
     'watch:dev'
   ]);
 
   grunt.initConfig({
-    pkg:  grunt.file.readJSON("package.json"),
-    env: grunt.option('env') || 'dev',
-
     app: {
       name: 'angular-multimocks',
       source_dir: 'app/src',
       build_dir: 'app/build',
-      package_dir: 'app/package'
+      demo_dir: '<%= app.build_dir %>/demo',
+      package_dir: 'app/package',
+      connect_port: grunt.option('connect_port') || 2302,
+      hostname: os.hostname()
     },
 
     clean: {
-      build : '<%= app.build_dir %>',
-      package : '<%= app.package_dir %>'
+      build: '<%= app.build_dir %>',
+      package: '<%= app.package_dir %>'
     },
 
     jshint: {
       source: [
+        '*.js',
         '<%= app.source_dir %>/**/*.js',
-        '!<%= app.source_dir %>/bower_components/**/*.js'
+        '!<%= app.source_dir %>/bower_components/**/*.js',
+        '!<%= app.source_dir %>/demo/**/*.js'
       ],
       options: {
-        jshintrc: '.jshintrc',
-      },
+        jshintrc: '.jshintrc'
+      }
+    },
+
+    jscs: {
+      source: [
+        '*.js',
+        '<%= app.source_dir %>/**/*.js',
+        '!<%= app.source_dir %>/bower_components/**/*.js',
+        '!<%= app.source_dir %>/demo/**/*.js'
+      ],
+      options: {
+        config: '.jscsrc'
+      }
     },
 
     copy: {
@@ -102,7 +124,7 @@ module.exports = function (grunt) {
       package: {
         src: [
           '<%= app.build_dir %>/js/**/*.js',
-          '!<%= app.build_dir %>/js/**/*.spec.js',
+          '!<%= app.build_dir %>/js/**/*.spec.js'
         ],
         dest: '<%= app.package_dir %>/js/<%= app.name %>.js'
       }
@@ -118,10 +140,31 @@ module.exports = function (grunt) {
       }
     },
 
+    connect: {
+      options: {
+        hostname: '*'
+      },
+      dev: {
+        options: {
+          port: '<%= app.connect_port %>',
+          base: '<%= app.source_dir %>'
+        }
+      }
+    },
+
+    open: {
+      dev: {
+        url: 'http://<%= app.hostname %>:<%= app.connect_port %>/demo'
+      }
+    },
+
     watch: {
       dev: {
         files: ['<%= app.source_dir %>/**/*'],
-        tasks: ['build', 'test:dev']
+        tasks: ['build', 'test:unit'],
+        options: {
+          livereload: true
+        }
       }
     }
   });

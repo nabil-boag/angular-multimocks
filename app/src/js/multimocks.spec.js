@@ -199,7 +199,7 @@ describe('multimocks', function () {
     it('should register a function to generate responses for mocks with ' +
        'polling', function () {
       // arrange
-      setupMultimocks({'scenario2': pollScenario});
+      setupMultimocks({scenario2: pollScenario});
 
       // assert
       var mockResource = scenario2[0];
@@ -254,16 +254,16 @@ describe('multimocks', function () {
     });
   });
 
-  describe('scenarioMocks', function() {
+  describe('scenarioMocks', function () {
     var scenarioMocks,
       currentScenario,
       $log;
 
-    beforeEach(function() {
-      module('scenario', function($provide) {
+    beforeEach(function () {
+      module('scenario', function ($provide) {
         $provide.value('multimocksData', {
           getMockData: jasmine.createSpy().andReturn(scenarios),
-          getDefaultScenario: jasmine.createSpy(),
+          getDefaultScenario: jasmine.createSpy()
         });
         $provide.value('$log', {
           log: jasmine.createSpy()
@@ -285,7 +285,7 @@ describe('multimocks', function () {
       });
     });
 
-    describe('getMocks', function() {
+    describe('getMocks', function () {
       it('should return mocks for a valid scenario', function () {
         // Act
         var mocks = scenarioMocks.getMocks('scenario1');
@@ -314,7 +314,7 @@ describe('multimocks', function () {
         });
     });
 
-    describe('getMocksForCurrentScenario', function() {
+    describe('getMocksForCurrentScenario', function () {
       it('should get mocks for the current scenario', function () {
         // Arrange
         scenarioMocks.getMocks = jasmine.createSpy().andReturn({data: 'value'});
@@ -329,8 +329,8 @@ describe('multimocks', function () {
       });
     });
 
-    describe('getDelayForResponse', function() {
-     it('should return 0 when a mock isn\'t set for a response', function () {
+    describe('getDelayForResponse', function () {
+      it('should return 0 when a mock isn\'t set for a response', function () {
         // Arrange
         scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
           .andReturn(scenario1);
@@ -411,11 +411,11 @@ describe('multimocks', function () {
     });
   });
 
-  describe('run', function(){
+  describe('run', function () {
     var currentScenario;
 
-    beforeEach(function() {
-      module('scenario', function($provide) {
+    beforeEach(function () {
+      module('scenario', function ($provide) {
         $provide.value('multimocks', {
           setup: jasmine.createSpy()
         });

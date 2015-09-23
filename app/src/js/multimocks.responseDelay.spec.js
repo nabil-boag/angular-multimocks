@@ -8,12 +8,12 @@ describe('multimocks.responseDelay', function () {
     scenarioMocks,
     mockedPromise;
 
-  beforeEach(function() {
+  beforeEach(function () {
     mockedPromise = {
       promise: 'mypromise',
       resolve: jasmine.createSpy()
     };
-    module('multimocks.responseDelay', function($provide, $httpProvider) {
+    module('multimocks.responseDelay', function ($provide, $httpProvider) {
       httpProvider = $httpProvider;
 
       $provide.value('httpProvider', {
@@ -36,7 +36,7 @@ describe('multimocks.responseDelay', function () {
     });
   });
 
-  describe('config', function() {
+  describe('config', function () {
     it('should add responseDelay to the $httpProvider interceptors',
       function () {
         // Assert
@@ -44,8 +44,8 @@ describe('multimocks.responseDelay', function () {
       });
   });
 
-  describe('responseDelay', function() {
-    describe('response', function() {
+  describe('responseDelay', function () {
+    describe('response', function () {
       it('should return a promise',
         function () {
           // Arrange

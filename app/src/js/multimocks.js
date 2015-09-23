@@ -62,7 +62,7 @@ angular
           $httpBackend
             .when(mock.httpMethod, uriRegExp, mock.requestData)
             .respond(function () {
-             // Call a certain amount of times to simulate polling.
+              // Call a certain amount of times to simulate polling.
               if (pollCounter < pollCount) {
                 pollCounter++;
                 return [204, {}, mockHeaders];
@@ -82,8 +82,7 @@ angular
           $http(req).success(function (response) {
             deferred.resolve();
           });
-        }
-        else {
+        } else {
           deferred.resolve();
         }
       };
@@ -118,14 +117,13 @@ angular
             .map(function (s) { return s.split('='); })
             .filter(function (kv) { return kv[0] === 'scenario'; });
           return scenarioParams[0][1];
-        }
-        else {
+        } else {
           return undefined;
         }
       }
 
       return {
-        getName: function() {
+        getName: function () {
           var scenarioFromURL = getScenarioFromPath($window.location.search);
           if (_.isUndefined(scenarioFromURL)) {
             return multimocksData.getDefaultScenario();
@@ -143,7 +141,7 @@ angular
     function ($log, multimocksData, currentScenario) {
       var mockData = multimocksData.getMockData();
 
-      function urlMatchesRegex(url, regex){
+      function urlMatchesRegex(url, regex) {
         var pattern = new RegExp(regex);
         return pattern.test(url);
       }
@@ -163,7 +161,7 @@ angular
         },
         getDelayForResponse: function (response) {
           var availableMocks = scenarioMocks.getMocksForCurrentScenario();
-          var matchedMockIndex = _.findIndex(availableMocks, function(mock) {
+          var matchedMockIndex = _.findIndex(availableMocks, function (mock) {
             var sameURL = urlMatchesRegex(response.config.url, mock.uri);
             var sameMethod = (mock.httpMethod === response.config.method);
             return sameMethod && sameURL;
