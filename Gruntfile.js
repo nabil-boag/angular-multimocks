@@ -14,6 +14,13 @@ module.exports = function (grunt) {
 
   var os = require('os');
 
+  var lintSourceRules = [
+    '*.js',
+    '<%= app.source_dir %>/**/*.js',
+    '!<%= app.source_dir %>/bower_components/**/*.js',
+    '!<%= app.source_dir %>/demo/**/*.js'
+  ];
+
   grunt.registerTask('build', [
     'jshint',
     'jscs',
@@ -46,7 +53,6 @@ module.exports = function (grunt) {
       name: 'angular-multimocks',
       source_dir: 'app/src',
       build_dir: 'app/build',
-      demo_dir: '<%= app.build_dir %>/demo',
       package_dir: 'app/package',
       connect_port: grunt.option('connect_port') || 2302,
       hostname: os.hostname()
@@ -58,24 +64,14 @@ module.exports = function (grunt) {
     },
 
     jshint: {
-      source: [
-        '*.js',
-        '<%= app.source_dir %>/**/*.js',
-        '!<%= app.source_dir %>/bower_components/**/*.js',
-        '!<%= app.source_dir %>/demo/**/*.js'
-      ],
+      source: lintSourceRules,
       options: {
         jshintrc: '.jshintrc'
       }
     },
 
     jscs: {
-      source: [
-        '*.js',
-        '<%= app.source_dir %>/**/*.js',
-        '!<%= app.source_dir %>/bower_components/**/*.js',
-        '!<%= app.source_dir %>/demo/**/*.js'
-      ],
+      source: lintSourceRules,
       options: {
         config: '.jscsrc'
       }
