@@ -1,7 +1,7 @@
 /* global angular, _ */
 
 angular
-  .module('scenario', ['ui.router', 'ngMockE2E', 'multimocks.responseDelay'])
+  .module('scenario', ['ngMockE2E', 'multimocks.responseDelay'])
 
   .provider('multimocksData', function () {
     var mockData = {},

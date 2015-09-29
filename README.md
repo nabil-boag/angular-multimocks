@@ -53,26 +53,20 @@ application:
 <script src="bower_components/angular-multimocks/app/package/js/angular-multimocks.min.js"></script>
 ```
 
-Angular Multimocks currently depends on Angular UI Router but will not in
-a future release. Include `angular-ui-router.js` or `angular-ui-router.min.js`
-in your application:
-
-```html
-<script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
-```
-
-Angular Multimocks depends on Angular Mocks include `angular-multimocks.js`
-in your application:
+Angular Multimocks depends on Angular Mocks and lodash, include them both in your application:
 
 ```html
 <script src="bower_components/angular-mocks/angular-mocks.js"></script>
+<script src="bower_components/lodash/dist/lodash.js"></script>
 ```
 
-Add `scenario` and `ngMockE2E` to your application:
+It's worth noting that Angular Multimocks depends on a method in lodash that is not in underscore.
+
+Add the `scenario` module to your application:
 
 ```javascript
 angular
-  .module('demo', ['scenario', 'ngMockE2E'])
+  .module('demo', ['scenario'])
   // more code here...
 ```
 
