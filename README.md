@@ -1,6 +1,8 @@
 Angular Multimocks
 ==================
 
+Travis Status
+-------------
 [![Build Status](https://travis-ci.org/wongatech/angular-multimocks.svg?branch=master)](https://travis-ci.org/wongatech/angular-multimocks)
 
 Angular Multimocks lets you test how your app behaves with different responses
@@ -16,6 +18,10 @@ parameter: `?scenario=foo`.
 You can use Angular Multimocks to quickly test your app works in all situations
 while developing or to provide mock data for a suite of automated acceptance
 tests.
+
+Demo
+----
+<http://tech.wonga.com/angular-multimocks/>
 
 Example Use Case
 ----------------
@@ -95,9 +101,10 @@ and can contain a regex:
 
 ### Delayed responses
 
-In some scenarios you may want to simulate a delay getting a response for a
-resource. Mocks accept an optional `responseDelay` property that will delay
-the response for the specified time in milliseconds:
+In some scenarios you may want to simulate a server/network delay.
+This is done by intercepting the HTTP response and delaying it.
+Mocks accept an optional `responseDelay` property that will delay
+the HTTP response for the specified time in milliseconds:
 
 ```
 "responseDelay": 500

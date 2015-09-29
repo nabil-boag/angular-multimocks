@@ -3,7 +3,7 @@
 // Karma configuration
 // http://karma-runner.github.io/0.10/config/configuration-file.html
 
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
     basePath: 'app/build',
     plugins: [
@@ -21,7 +21,7 @@ module.exports = function(config) {
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/angular-ui-router/release/angular-ui-router.js',
-      'bower_components/lodash/dist/lodash.js',
+      'bower_components/lodash/lodash.js',
       'js/**/*.js'
     ],
     preprocessors: {
@@ -34,8 +34,8 @@ module.exports = function(config) {
     reporters: ['coverage', 'dots'],
 
     coverageReporter:  {
-      type : 'html',
-      dir : '../../coverage/'
+      type: 'html',
+      dir: '../../coverage/'
     },
 
     singleRun: true,
