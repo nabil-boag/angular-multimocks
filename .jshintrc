@@ -1,14 +1,8 @@
 {
   "curly": true,
   "eqeqeq": true,
-  "immed": true,
   "latedef": true,
-  "newcap": true,
   "noarg": true,
-  "sub": true,
-  "white": true,
-  "indent": 2,
   "undef": true,
-  "maxlen": 80,
-  "quotmark": "single"
+  "unused": true
 }
