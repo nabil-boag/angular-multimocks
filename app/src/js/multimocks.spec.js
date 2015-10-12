@@ -1,6 +1,5 @@
 /* global describe, beforeEach, jasmine, module, inject, it, expect */
 
-
 describe('multimocks', function () {
   var mockHttpBackend, mockWindow, multimocksDataProvider, multimocksData,
     multimocks, scenario1, scenario2, pollScenario, delayedResponseScenario,
@@ -75,7 +74,7 @@ describe('multimocks', function () {
       'when',
       'respond'
     ]);
-    mockHttpBackend.when.andReturn(mockHttpBackend);
+    mockHttpBackend.when.and.returnValue(mockHttpBackend);
 
     mockHeaders = {foo: 'bar'};
 
@@ -195,7 +194,6 @@ describe('multimocks', function () {
       expect(mockHttpBackend.respond).not.toHaveBeenCalled();
     });
 
-
     it('should register a function to generate responses for mocks with ' +
        'polling', function () {
       // arrange
@@ -257,12 +255,13 @@ describe('multimocks', function () {
   describe('scenarioMocks', function () {
     var scenarioMocks,
       currentScenario,
-      $log;
+      $log,
+      multimocksLocation;
 
     beforeEach(function () {
       module('scenario', function ($provide) {
         $provide.value('multimocksData', {
-          getMockData: jasmine.createSpy().andReturn(scenarios),
+          getMockData: jasmine.createSpy().and.returnValue(scenarios),
           getDefaultScenario: jasmine.createSpy()
         });
         $provide.value('$log', {
@@ -274,14 +273,18 @@ describe('multimocks', function () {
         $provide.value('multimocks', {
           setup: jasmine.createSpy()
         });
+        $provide.value('multimocksLocation', {
+          getQueryStringValuesByKey: jasmine.createSpy()
+        });
       });
 
       inject(function (_scenarioMocks_, _$log_, _multimocksData_,
-        _currentScenario_) {
+        _currentScenario_, _multimocksLocation_) {
         scenarioMocks = _scenarioMocks_;
         multimocksData = _multimocksData_;
         currentScenario = _currentScenario_;
         $log = _$log_;
+        multimocksLocation = _multimocksLocation_;
       });
     });
 
@@ -306,7 +309,7 @@ describe('multimocks', function () {
       it('should log when no mocks can be found for a specified scenario',
         function () {
           // Act
-          var mocks = scenarioMocks.getMocks('notFoundScenario');
+          scenarioMocks.getMocks('notFoundScenario');
 
           // Assert
           expect($log.log).toHaveBeenCalledWith(
@@ -317,8 +320,9 @@ describe('multimocks', function () {
     describe('getMocksForCurrentScenario', function () {
       it('should get mocks for the current scenario', function () {
         // Arrange
-        scenarioMocks.getMocks = jasmine.createSpy().andReturn({data: 'value'});
-        currentScenario.getName.andReturn('scenario3');
+        scenarioMocks.getMocks = jasmine.createSpy().and
+          .returnValue({data: 'value'});
+        currentScenario.getName.and.returnValue('scenario3');
 
         // Act
         var mocks = scenarioMocks.getMocksForCurrentScenario();
@@ -333,8 +337,8 @@ describe('multimocks', function () {
       it('should return 0 when a mock isn\'t set for a response', function () {
         // Arrange
         scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
-          .andReturn(scenario1);
-        currentScenario.getName.andReturn('scenario3');
+          .and.returnValue(scenario1);
+        currentScenario.getName.and.returnValue('scenario3');
         var mockedResponse = {
           config: {
             method: 'UNKNOWN',
@@ -353,8 +357,8 @@ describe('multimocks', function () {
         function () {
           // Arrange
           scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
-            .andReturn(scenario1);
-          currentScenario.getName.andReturn('scenario3');
+            .and.returnValue(scenario1);
+          currentScenario.getName.and.returnValue('scenario3');
           var mockedResponse = {
             config: {
               method: 'GET',
@@ -373,8 +377,8 @@ describe('multimocks', function () {
         function () {
           // Arrange
           scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
-            .andReturn(delayedResponseScenario);
-          currentScenario.getName.andReturn('delayedResponseScenario');
+            .and.returnValue(delayedResponseScenario);
+          currentScenario.getName.and.returnValue('delayedResponseScenario');
           var mockedResponse = {
             config: {
               method: 'GET',
@@ -393,8 +397,8 @@ describe('multimocks', function () {
         function () {
           // Arrange
           scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
-            .andReturn(regexScenario);
-          currentScenario.getName.andReturn('regexScenario');
+            .and.returnValue(regexScenario);
+          currentScenario.getName.and.returnValue('regexScenario');
           var mockedResponse = {
             config: {
               method: 'GET',
@@ -408,6 +412,95 @@ describe('multimocks', function () {
           // Assert
           expect(delay).toBe(345);
         });
+
+      it('should return overridden global delay when specified in url',
+        function () {
+          // Arrange
+          multimocksLocation.getQueryStringValuesByKey.and.returnValue(['123']);
+          scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
+            .and.returnValue(delayedResponseScenario);
+          currentScenario.getName.and.returnValue('delayedResponseScenario');
+          var mockedResponse = {
+            config: {
+              method: 'GET',
+              url: '/delayed'
+            }
+          };
+
+          // Act
+          var delay = scenarioMocks.getDelayForResponse(mockedResponse);
+
+          // Assert
+          expect(delay).toBe(123);
+        });
+    });
+  });
+
+  describe('multimocksLocation', function () {
+    var multimocksLocation,
+      $window;
+
+    beforeEach(function () {
+      module('scenario', function ($provide) {
+        $provide.value('$window', {
+          location: {
+            search: ''
+          }
+        });
+      });
+
+      inject(function (_multimocksLocation_, _$window_) {
+        multimocksLocation = _multimocksLocation_;
+        $window = _$window_;
+      });
+    });
+
+    describe('getQueryStringValuesByKey', function () {
+      it('should return undefined if there are no matching items', function () {
+        // Arrange
+        $window.location.search = '?bar=baz';
+
+        // Act
+        var result = multimocksLocation.getQueryStringValuesByKey('foo');
+
+        // Assert
+        expect(result).toBe(undefined);
+      });
+
+      it('should return multiple results if there multiple items', function () {
+        // Arrange
+        $window.location.search = '?foo=1&bar=something&foo=2';
+
+        // Act
+        var result = multimocksLocation.getQueryStringValuesByKey('foo');
+
+        // Assert
+        expect(result).toEqual(['1','2']);
+      });
+
+      it('should return results for URL encoded values', function () {
+        // Arrange
+        $window.location.search = '?url=http%3A%2F%2Fw3schools.com';
+
+        // Act
+        var result = multimocksLocation.getQueryStringValuesByKey('url');
+
+        // Assert
+        expect(result).toEqual(['http://w3schools.com']);
+      });
+
+      it('should return an array with undefined for keys without values',
+        function () {
+          // Arrange
+          $window.location.search = '?foo=1&bar';
+
+          // Act
+          var result = multimocksLocation.getQueryStringValuesByKey('bar');
+
+          // Assert
+          expect(result).toEqual([undefined]);
+        });
+
     });
   });
 
@@ -421,7 +514,7 @@ describe('multimocks', function () {
         });
 
         $provide.value('currentScenario', {
-          getName: jasmine.createSpy().andReturn('myScenarioName')
+          getName: jasmine.createSpy().and.returnValue('myScenarioName')
         });
       });
 
