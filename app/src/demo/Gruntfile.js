@@ -5,7 +5,7 @@ module.exports = function (grunt) {
   //
   //   grunt.loadNpmTasks('angular-multimocks');
   //
-  grunt.task.loadTasks('../tasks');
+  grunt.task.loadTasks('../../../tasks');
 
   grunt.config.init({
     multimocks: {
