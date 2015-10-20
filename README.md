@@ -136,6 +136,15 @@ The example above defines 2 scenarios `_default` and `loggedIn`. `loggedIn` has
 the default versions of the `root` and `orders` resources, but overrides
 `account`, using the version in `account/loggedIn.json`.
 
+#### Global delay override
+
+You can override all delays in a request by adding an optional parameter to
+the query string.
+
+```
+global_delay=0
+```
+
 Grunt Task
 ----------
 

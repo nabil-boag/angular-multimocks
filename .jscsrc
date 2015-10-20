@@ -3,12 +3,14 @@
     "requireCamelCaseOrUpperCaseIdentifiers": "ignoreProperties",
     "disallowTrailingComma": true,
     "disallowSpacesInFunction": null,
+    "disallowMultipleLineBreaks": true,
     "requireCapitalizedComments": null,
+    "requireCapitalizedConstructors": true,
+    "requireParenthesesAroundIIFE": true,
     "requireTrailingComma": null,
     "requireSpaceAfterLineComment": null,
     "disallowMultipleVarDecl": null,
-    "maximumLineLength": null,
-    "requireLineBreakAfterVariableAssignment": true,
+    "maximumLineLength": 80,
     "requireSpaceAfterKeywords": [
         "do",
         "for",
@@ -24,5 +26,7 @@
         "return",
         "typeof",
         "function"
-    ]
+    ],
+    "requireLineBreakAfterVariableAssignment" : true,
+    "validateIndentation": 2
 }

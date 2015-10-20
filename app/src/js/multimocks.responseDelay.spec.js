@@ -23,7 +23,7 @@ describe('multimocks.responseDelay', function () {
         getDelayForResponse: jasmine.createSpy()
       });
       $provide.value('$q', {
-        defer: jasmine.createSpy().andReturn(mockedPromise)
+        defer: jasmine.createSpy().and.returnValue(mockedPromise)
       });
       $provide.value('$timeout', jasmine.createSpy());
     });
@@ -49,7 +49,7 @@ describe('multimocks.responseDelay', function () {
       it('should return a promise',
         function () {
           // Arrange
-          scenarioMocks.getDelayForResponse.andReturn();
+          scenarioMocks.getDelayForResponse.and.returnValue();
 
           // Act
           var result = responseDelay.response();
@@ -61,7 +61,7 @@ describe('multimocks.responseDelay', function () {
       it('should set $timeout with the expected arguments',
         function () {
           // Arrange
-          scenarioMocks.getDelayForResponse.andReturn(123);
+          scenarioMocks.getDelayForResponse.and.returnValue(123);
 
           // Act
           responseDelay.response();
@@ -72,6 +72,9 @@ describe('multimocks.responseDelay', function () {
 
       it('should call $timeout with a function that resolves promise',
         function () {
+          // Arrange
+          scenarioMocks.getDelayForResponse.and.returnValue();
+
           // Act
           responseDelay.response('foo');
           /*
@@ -80,7 +83,7 @@ describe('multimocks.responseDelay', function () {
            * By calling the most recent function we can assert that
            * the correct function was called.
            */
-          $timeout.mostRecentCall.args[0]();
+          $timeout.calls.mostRecent().args[0]();
 
           // Assert
           expect(mockedPromise.resolve).toHaveBeenCalledWith('foo');
