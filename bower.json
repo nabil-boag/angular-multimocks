@@ -2,7 +2,9 @@
   "name": "angular-multimocks-demo",
   "dependencies": {
     "angular": "~1.2.0",
-    "angular-multimocks": "~0.5.4",
+    "angular-mocks": "~1.2.0",
+    "angular-multimocks": "~0.5.7",
+    "lodash": "~3.6.0",
     "bootstrap": "~3.2.0"
   }
 }

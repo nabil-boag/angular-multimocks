@@ -21,9 +21,8 @@
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="bower_components/angular/angular.min.js"></script>
-    <script src="bower_components/lodash/dist/lodash.min.js"></script>
     <script src="bower_components/angular-mocks/angular-mocks.js"></script>
-    <script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script src="bower_components/lodash/lodash.min.js"></script>
     <script src="bower_components/angular-multimocks/app/package/js/angular-multimocks.js"></script>
     <script src="mockOutput.js"></script>
 
@@ -159,7 +158,7 @@
 
     <script>
       angular
-        .module('demo', ['scenario', 'ngMockE2E'])
+        .module('demo', ['scenario'])
         .controller('demoCtrl', ['$scope', '$http', function ($scope, $http) {
           $scope.games = [];
           $scope.loading = true;

@@ -1,7 +1,7 @@
 /* global angular, _ */
 
 angular
-  .module('scenario', ['ui.router', 'ngMockE2E', 'multimocks.responseDelay'])
+  .module('scenario', ['ngMockE2E', 'multimocks.responseDelay'])
 
   .provider('multimocksData', function () {
     var mockData = {},
@@ -62,7 +62,7 @@ angular
           $httpBackend
             .when(mock.httpMethod, uriRegExp, mock.requestData)
             .respond(function () {
-             // Call a certain amount of times to simulate polling.
+              // Call a certain amount of times to simulate polling.
               if (pollCounter < pollCount) {
                 pollCounter++;
                 return [204, {}, mockHeaders];
@@ -79,11 +79,10 @@ angular
         // TODO deprecated?
         if (mock.callInSetup) {
           var req = {method: mock.httpMethod, url: mock.uri};
-          $http(req).success(function (response) {
+          $http(req).success(function () {
             deferred.resolve();
           });
-        }
-        else {
+        } else {
           deferred.resolve();
         }
       };
@@ -118,14 +117,13 @@ angular
             .map(function (s) { return s.split('='); })
             .filter(function (kv) { return kv[0] === 'scenario'; });
           return scenarioParams[0][1];
-        }
-        else {
+        } else {
           return undefined;
         }
       }
 
       return {
-        getName: function() {
+        getName: function () {
           var scenarioFromURL = getScenarioFromPath($window.location.search);
           if (_.isUndefined(scenarioFromURL)) {
             return multimocksData.getDefaultScenario();
@@ -140,10 +138,11 @@ angular
     '$log',
     'multimocksData',
     'currentScenario',
-    function ($log, multimocksData, currentScenario) {
+    'multimocksLocation',
+    function ($log, multimocksData, currentScenario, multimocksLocation) {
       var mockData = multimocksData.getMockData();
 
-      function urlMatchesRegex(url, regex){
+      function urlMatchesRegex(url, regex) {
         var pattern = new RegExp(regex);
         return pattern.test(url);
       }
@@ -162,8 +161,13 @@ angular
           return scenarioMocks.getMocks(currentScenario.getName());
         },
         getDelayForResponse: function (response) {
+          var globalDelay = multimocksLocation
+            .getQueryStringValuesByKey('global_delay');
+          if (globalDelay) {
+            return parseInt(globalDelay[0]);
+          }
           var availableMocks = scenarioMocks.getMocksForCurrentScenario();
-          var matchedMockIndex = _.findIndex(availableMocks, function(mock) {
+          var matchedMockIndex = _.findIndex(availableMocks, function (mock) {
             var sameURL = urlMatchesRegex(response.config.url, mock.uri);
             var sameMethod = (mock.httpMethod === response.config.method);
             return sameMethod && sameURL;
@@ -177,6 +181,54 @@ angular
       return scenarioMocks;
     }
   ])
+
+  /**
+   * Service to interact with the browser location
+   */
+  .service('multimocksLocation', [
+    '$window',
+    function ($window) {
+      var multimocksLocation = {};
+
+      /**
+       * Returns an array of values for a specified query string parameter.
+       *
+       * Handles multivalued keys and encoded characters.
+       *
+       * Usage:
+       *
+       * If the URL is /?foo=bar
+       *
+       * multimocksLocation.getQueryStringValuesByKey('foo')
+       *
+       * Will return
+       *
+       * ['bar']
+       *
+       * @return Array
+       *   An array of values for the specified key.
+       */
+      multimocksLocation.getQueryStringValuesByKey = function (key) {
+        var queryDictionary = {};
+        $window.location.search
+          .substr(1)
+          .split('&')
+          .forEach(function (item) {
+            var s = item.split('='),
+              k = s[0],
+              v = s[1] && decodeURIComponent(s[1]);
+
+            if (queryDictionary[k ]) {
+              queryDictionary[k].push(v);
+            } else {
+              queryDictionary[k] = [v];
+            }
+          });
+        return queryDictionary[key];
+      };
+
+      return multimocksLocation;
+    }])
 
   .run([
     'multimocks',
