@@ -43,7 +43,7 @@ cases. You may want responses for the following:
 Demo App
 --------
 
-See `demo/` for a demo app. Inside the demo app, run `grunt` to generate the
+See `app/src/demo/` for a demo app. Inside the demo app, run `grunt` to generate the
 mocks, then open `index.html` in your browser.
 
 Usage
