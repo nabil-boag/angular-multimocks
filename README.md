@@ -13,7 +13,10 @@ scenarios as JSON files. A developer of an e-commerce app could set up scenarios
 for a new customer, one who is registered and one who has an order outstanding.
 
 Angular Multimocks allows you to switch between scenarios using a query string
-parameter: `?scenario=foo`.
+parameter: 
+```
+?scenario=foo
+```
 
 You can use Angular Multimocks to quickly test your app works in all situations
 while developing or to provide mock data for a suite of automated acceptance
