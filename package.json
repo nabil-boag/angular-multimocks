@@ -12,10 +12,7 @@
   "dependencies": {
     "lodash": "~2.4.1",
     "angular": "~1.2.0",
-    "angular-mocks": "~1.2.0",
-    "angular-resource": "~1.2.0",
-    "angular-ui-router": "0.2.15",
-    "angular-ui-utils": "~0.1.1"   
+    "angular-mocks": "~1.2.0"
   },
   "devDependencies": {
     "connect": "~2.9.0",

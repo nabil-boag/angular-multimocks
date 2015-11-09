@@ -265,7 +265,7 @@ describe('multimocks', function () {
           getDefaultScenario: jasmine.createSpy()
         });
         $provide.value('$log', {
-          log: jasmine.createSpy()
+          error: jasmine.createSpy()
         });
         $provide.value('currentScenario', {
           getName: jasmine.createSpy()
@@ -312,7 +312,7 @@ describe('multimocks', function () {
           scenarioMocks.getMocks('notFoundScenario');
 
           // Assert
-          expect($log.log).toHaveBeenCalledWith(
+          expect($log.error).toHaveBeenCalledWith(
             'Mocks not found for scenario: notFoundScenario');
         });
     });
