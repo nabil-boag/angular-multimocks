@@ -17,8 +17,7 @@ module.exports = function (grunt) {
   var lintSourceRules = [
     '*.js',
     '<%= app.source_dir %>/**/*.js',
-    '!<%= app.source_dir %>/bower_components/**/*.js',
-    '!<%= app.source_dir %>/demo/**/*.js'
+    '!<%= app.source_dir %>/node_modules/**/*.js'
   ];
 
   grunt.registerTask('build', [
@@ -88,7 +87,20 @@ module.exports = function (grunt) {
           },
           {
             expand: true,
-            src: ['bower.json', 'package.json'],
+            cwd: 'node_modules',
+            src: [
+              'angular/angular.js',
+              'angular-mocks/angular-mocks.js',
+              'angular-resource/angular-resource.min.js',
+              'angular-ui-router/release/angular-ui-router.js',
+              'angular-ui-utils/modules/utils.js',
+              'lodash/lodash.js'
+            ],
+            dest: '<%= app.build_dir %>/node_modules'
+          },
+          {
+            expand: true,
+            src: ['package.json'],
             dest: '<%= app.build_dir %>'
           }
         ]
@@ -143,7 +155,7 @@ module.exports = function (grunt) {
       dev: {
         options: {
           port: '<%= app.connect_port %>',
-          base: '<%= app.source_dir %>'
+          base: '<%= app.build_dir %>'
         }
       }
     },

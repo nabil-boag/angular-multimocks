@@ -18,14 +18,14 @@ module.exports = function (config) {
 
     frameworks: ['jasmine'],
     files: [
-      'bower_components/angular/angular.js',
-      'bower_components/angular-mocks/angular-mocks.js',
-      'bower_components/angular-ui-router/release/angular-ui-router.js',
-      'bower_components/lodash/lodash.js',
+      'node_modules/angular/angular.js',
+      'node_modules/angular-mocks/angular-mocks.js',
+      'node_modules/angular-ui-router/release/angular-ui-router.js',
+      'node_modules/lodash/lodash.js',
       'js/**/*.js'
     ],
     preprocessors: {
-      '!(bower_components)/**/*.js': 'coverage'
+      '!(node_modules)/**/*.js': 'coverage'
     },
 
     /**
