@@ -27,7 +27,6 @@
 
     <script src="/node_modules/angular/angular.js"></script>
     <script src="/node_modules/angular-mocks/angular-mocks.js"></script>
-    <script src="/node_modules/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="/node_modules/lodash/lodash.js"></script>
     <script src="/js/multimocks.js"></script>
     <script src="/js/multimocks.responseDelay.js"></script>
@@ -37,13 +36,7 @@
       // simple app which makes a request and displays the results in the
       // template
       angular
-        .module('demo', ['scenario', 'ui.router'])
-        .config(['$stateProvider', function ($stateProvider) {
-          $stateProvider.state('demo', {
-            url: '/demo',
-            controller: 'demoCtrl',
-          });
-        }])
+        .module('demo', ['scenario'])
         .controller('demoCtrl', ['$scope', '$http', function ($scope, $http) {
           $scope.values = {};
           $scope.method = 'GET';

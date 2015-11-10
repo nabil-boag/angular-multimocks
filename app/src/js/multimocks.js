@@ -154,7 +154,7 @@ angular
           }
 
           if (scenarioToLoad) {
-            $log.log('Mocks not found for scenario: ' + scenarioToLoad);
+            $log.error('Mocks not found for scenario: ' + scenarioToLoad);
           }
         },
         getMocksForCurrentScenario: function () {
