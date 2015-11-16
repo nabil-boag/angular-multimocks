@@ -49,24 +49,28 @@ mocks, then open `index.html` in your browser.
 Usage
 -----
 
-Add Angular Multimocks to your project with Bower:
+NPM
+-----
 
 ```sh
-bower install --save angular-multimocks
+npm install --save angular-multimocks
 ```
 
 Include `angular-multimocks.js` or `angular-multimocks.min.js` in your
 application:
 
 ```html
-<script src="bower_components/angular-multimocks/app/package/js/angular-multimocks.min.js"></script>
+<script src="node_modules/angular-multimocks/app/package/js/angular-multimocks.min.js"></script>
 ```
 
-Angular Multimocks depends on Angular Mocks and lodash, include them both in your application:
+Dependencies
+------------
+
+Angular Multimocks depends on Angular Mocks and lodash, include them both in your application. For example:
 
 ```html
-<script src="bower_components/angular-mocks/angular-mocks.js"></script>
-<script src="bower_components/lodash/dist/lodash.js"></script>
+<script src="node_modules/angular-mocks/angular-mocks.js"></script>
+<script src="node_modules/lodash/dist/lodash.js"></script>
 ```
 
 It's worth noting that Angular Multimocks depends on a method in lodash that is not in underscore.
@@ -311,7 +315,6 @@ To contribute:
 
 - Fork the repo
 - Run `npm install`
-- Run `bower install`
 - Run `grunt workflow:dev` to watch for changes, lint, build and run tests as
   you're working
 - Write your unit tests for your change
