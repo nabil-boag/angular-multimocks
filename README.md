@@ -5,6 +5,10 @@ Travis Status
 -------------
 [![Build Status](https://travis-ci.org/wongatech/angular-multimocks.svg?branch=master)](https://travis-ci.org/wongatech/angular-multimocks)
 
+Demo
+----
+<http://tech.wonga.com/angular-multimocks/>
+
 Angular Multimocks lets you test how your app behaves with different responses
 from an API.
 
@@ -13,7 +17,7 @@ scenarios as JSON files. A developer of an e-commerce app could set up scenarios
 for a new customer, one who is registered and one who has an order outstanding.
 
 Angular Multimocks allows you to switch between scenarios using a query string
-parameter: 
+parameter:
 ```
 ?scenario=foo
 ```
@@ -21,10 +25,6 @@ parameter:
 You can use Angular Multimocks to quickly test your app works in all situations
 while developing or to provide mock data for a suite of automated acceptance
 tests.
-
-Demo
-----
-<http://tech.wonga.com/angular-multimocks/>
 
 Example Use Case
 ----------------
