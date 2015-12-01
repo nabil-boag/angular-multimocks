@@ -55,7 +55,7 @@ angular
         // Mock a polling resource.
         if (mock.poll) {
           var pollCounter = 0,
-              pollCount = mock.pollCount ? mock.pollCount : 2;
+              pollCount = mock.pollCount === undefined ? mock.pollCount : 2;
 
           // Respond with a 204 which will then get polled until a 200 is
           // returned.
@@ -148,7 +148,7 @@ angular
 
       var scenarioMocks =  {
         getMocks: function (scenarioToLoad) {
-          if (mockData[scenarioToLoad]) {
+          if (mockData[scenarioToLoad] !== undefined) {
             return mockData[scenarioToLoad];
           }
 
@@ -162,7 +162,7 @@ angular
         getDelayForResponse: function (response) {
           var globalDelay = multimocksLocation
             .getQueryStringValuesByKey('global_delay');
-          if (globalDelay) {
+          if (globalDelay !== undefined) {
             return parseInt(globalDelay[0]);
           }
           var availableMocks = scenarioMocks.getMocksForCurrentScenario();
