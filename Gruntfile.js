@@ -90,11 +90,7 @@ module.exports = function (grunt) {
             cwd: 'node_modules',
             src: [
               'angular/angular.js',
-              'angular-mocks/angular-mocks.js',
-              'angular-resource/angular-resource.min.js',
-              'angular-ui-router/release/angular-ui-router.js',
-              'angular-ui-utils/modules/utils.js',
-              'lodash/lodash.js'
+              'angular-mocks/angular-mocks.js'
             ],
             dest: '<%= app.build_dir %>/node_modules'
           },

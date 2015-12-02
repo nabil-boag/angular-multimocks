@@ -1,4 +1,4 @@
-/* global angular, _ */
+/* global angular */
 
 angular
   .module('scenario', ['ngMockE2E', 'multimocks.responseDelay'])
@@ -55,7 +55,7 @@ angular
         // Mock a polling resource.
         if (mock.poll) {
           var pollCounter = 0,
-              pollCount = _.has(mock, 'pollCount') ? mock.pollCount : 2;
+              pollCount = mock.pollCount === undefined ? mock.pollCount : 2;
 
           // Respond with a 204 which will then get polled until a 200 is
           // returned.
@@ -92,11 +92,10 @@ angular
           var deferred = $q.defer();
 
           // Set mock for each item.
-          _.forOwn(scenarioMocks.getMocks(scenarioName),
-            function (mock) {
-              setupHttpBackendForMockResource(deferred, mock);
-            }
-          );
+          var mocks = scenarioMocks.getMocks(scenarioName);
+          for (var i in mocks) {
+            setupHttpBackendForMockResource(deferred, mocks[i]);
+          }
 
           return deferred.promise;
         }
@@ -125,7 +124,7 @@ angular
       return {
         getName: function () {
           var scenarioFromURL = getScenarioFromPath($window.location.search);
-          if (_.isUndefined(scenarioFromURL)) {
+          if (scenarioFromURL === undefined) {
             return multimocksData.getDefaultScenario();
           }
           return scenarioFromURL;
@@ -149,12 +148,12 @@ angular
 
       var scenarioMocks =  {
         getMocks: function (scenarioToLoad) {
-          if (_.has(mockData, scenarioToLoad)) {
+          if (mockData[scenarioToLoad] !== undefined) {
             return mockData[scenarioToLoad];
           }
 
           if (scenarioToLoad) {
-            $log.log('Mocks not found for scenario: ' + scenarioToLoad);
+            $log.error('Mocks not found for scenario: ' + scenarioToLoad);
           }
         },
         getMocksForCurrentScenario: function () {
@@ -163,15 +162,21 @@ angular
         getDelayForResponse: function (response) {
           var globalDelay = multimocksLocation
             .getQueryStringValuesByKey('global_delay');
-          if (globalDelay) {
+          if (globalDelay !== undefined) {
             return parseInt(globalDelay[0]);
           }
           var availableMocks = scenarioMocks.getMocksForCurrentScenario();
-          var matchedMockIndex = _.findIndex(availableMocks, function (mock) {
+
+          var matchedMockIndex = 0;
+          for (var i in availableMocks) {
+            var mock = availableMocks[i];
             var sameURL = urlMatchesRegex(response.config.url, mock.uri);
             var sameMethod = (mock.httpMethod === response.config.method);
-            return sameMethod && sameURL;
-          });
+            if (sameMethod && sameURL) {
+              matchedMockIndex = i;
+              break;
+            }
+          }
           if (matchedMockIndex < 0) {
             return 0;
           }

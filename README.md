@@ -66,14 +66,11 @@ application:
 Dependencies
 ------------
 
-Angular Multimocks depends on Angular Mocks and lodash, include them both in your application. For example:
+Angular Multimocks depends on Angular Mocks so include it in your application. For example:
 
 ```html
 <script src="node_modules/angular-mocks/angular-mocks.js"></script>
-<script src="node_modules/lodash/dist/lodash.js"></script>
 ```
-
-It's worth noting that Angular Multimocks depends on a method in lodash that is not in underscore.
 
 Add the `scenario` module to your application:
 
