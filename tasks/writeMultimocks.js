@@ -138,7 +138,7 @@ module.exports = function (grunt) {
     var templateData = {scenarioData: data};
     templateData.scenarioDataName = name || '';
 
-    var output = _.template(templateString, templateData);
+    var output = _.template(templateString)(templateData);
 
     // write file
     fs.writeFileSync(path, output);
