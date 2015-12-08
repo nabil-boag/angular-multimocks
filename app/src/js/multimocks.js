@@ -55,7 +55,7 @@ angular
         // Mock a polling resource.
         if (mock.poll) {
           var pollCounter = 0,
-              pollCount = mock.pollCount === undefined ? mock.pollCount : 2;
+              pollCount = mock.pollCount !== undefined ? mock.pollCount : 2;
 
           // Respond with a 204 which will then get polled until a 200 is
           // returned.
@@ -167,20 +167,15 @@ angular
           }
           var availableMocks = scenarioMocks.getMocksForCurrentScenario();
 
-          var matchedMockIndex = 0;
           for (var i in availableMocks) {
             var mock = availableMocks[i];
             var sameURL = urlMatchesRegex(response.config.url, mock.uri);
             var sameMethod = (mock.httpMethod === response.config.method);
             if (sameMethod && sameURL) {
-              matchedMockIndex = i;
-              break;
+              return mock.responseDelay || 0;
             }
           }
-          if (matchedMockIndex < 0) {
-            return 0;
-          }
-          return availableMocks[matchedMockIndex].responseDelay || 0;
+          return 0;
         }
       };
       return scenarioMocks;

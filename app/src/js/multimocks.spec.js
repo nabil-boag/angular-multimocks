@@ -337,7 +337,7 @@ describe('multimocks', function () {
       it('should return 0 when a mock isn\'t set for a response', function () {
         // Arrange
         scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
-          .and.returnValue(scenario1);
+          .and.returnValue(delayedResponseScenario);
         currentScenario.getName.and.returnValue('scenario3');
         var mockedResponse = {
           config: {
