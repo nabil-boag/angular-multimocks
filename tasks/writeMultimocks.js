@@ -37,9 +37,9 @@ module.exports = function (grunt) {
       var filepath = fs.realpathSync(path.join(mockSrc, filename));
 
       return {
-        'scenarioName': scenarioName,
-        'filename': filename,
-        'scenario': require(filepath)
+        scenarioName: scenarioName,
+        filename: filename,
+        scenario: require(filepath)
       };
     });
 
@@ -47,9 +47,8 @@ module.exports = function (grunt) {
     if (scenarioName === '_default') {
       return scenario;
     }
-    else {
-      return mergeScenarios(defaultScenario, scenario);
-    }
+
+    return mergeScenarios(defaultScenario, scenario);
   };
 
   /**
@@ -80,13 +79,18 @@ module.exports = function (grunt) {
    * decorate responses.
    *
    * @param  {object} data
-   * @param  {array} plugins
+   * @param  {array} pluginNames
    * @return {object} decoratedData
    */
   var runPlugins = function (data, pluginNames) {
     grunt.verbose.writeln('runPlugins input', data);
-    var plugins = pluginNames.map(function (pn) { return pluginRegistry[pn]; }),
-      applyPlugin = function (oldData, plugin) { return plugin(oldData); };
+    var plugins = pluginNames.map(function (pn) {
+        return pluginRegistry[pn];
+      }),
+      applyPlugin = function (oldData, plugin) {
+        return plugin(oldData);
+      };
+
     // Use reduce to apply all the plugins to the data
     var output = plugins.reduce(applyPlugin, data);
     grunt.verbose.writeln('runPlugins output', output);
@@ -124,9 +128,9 @@ module.exports = function (grunt) {
   };
 
   /**
-   * Save the file
+   * Saves the specified file to file system.
    *
-   * @param {string} template
+   * @param {string} templatePath
    * @param {string} path
    * @param {string} data
    * @param {string} name

@@ -14,12 +14,6 @@ module.exports = function (grunt) {
 
   var os = require('os');
 
-  var lintSourceRules = [
-    '*.js',
-    '<%= app.source_dir %>/**/*.js',
-    '!<%= app.source_dir %>/node_modules/**/*.js'
-  ];
-
   grunt.registerTask('build', [
     'jshint',
     'jscs',
@@ -63,14 +57,26 @@ module.exports = function (grunt) {
     },
 
     jshint: {
-      source: lintSourceRules,
+      source: [
+        '*.js',
+        '<%= app.source_dir %>/**/*.js',
+        '!<%= app.source_dir %>/node_modules/**/*.js',
+        'tasks/*.js',
+        'tasks/**/*.js'
+      ],
       options: {
         jshintrc: '.jshintrc'
       }
     },
 
     jscs: {
-      source: lintSourceRules,
+      source: [
+        '*.js',
+        '<%= app.source_dir %>/**/*.js',
+        '!<%= app.source_dir %>/node_modules/**/*.js',
+        'tasks/*.js',
+        'tasks/**/*.js'
+      ],
       options: {
         config: '.jscsrc'
       }

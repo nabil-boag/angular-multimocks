@@ -116,9 +116,8 @@ angular
             .map(function (s) { return s.split('='); })
             .filter(function (kv) { return kv[0] === 'scenario'; });
           return scenarioParams[0][1];
-        } else {
-          return undefined;
         }
+        return undefined;
       }
 
       return {
