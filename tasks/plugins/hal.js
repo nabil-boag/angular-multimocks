@@ -1,4 +1,4 @@
-/* global module, require, console */
+/* global module, require */
 
 var _ = require('lodash');
 
@@ -33,8 +33,7 @@ var scenarioWithLinks = function (links, scenario) {
       if (resourceClone.scenario.relNames) {
         resourceClone.scenario.response._links = _.pick(links,
           resourceClone.scenario.relNames);
-      }
-      else {
+      } else {
         resourceClone.scenario.response._links = links;
       }
     }
@@ -48,8 +47,7 @@ var scenarioWithLinks = function (links, scenario) {
 var addHalUris = function (resource) {
   if (resource.scenario.rel === 'Root') {
     resource.scenario.uri = '/';
-  }
-  else {
+  } else {
     resource.scenario.uri = '/' + resource.scenario.rel;
   }
   return resource;

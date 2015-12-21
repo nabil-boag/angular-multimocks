@@ -1,5 +1,5 @@
 /* global module, require */
 
 module.exports = {
-  'hal': require('./plugins/hal')
+  hal: require('./plugins/hal')
 };
