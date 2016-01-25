@@ -1,0 +1,17 @@
+{
+  "name": "angular-multimocks-demo",
+  "description": "Angular Multimocks Demo",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/wongatech/angular-multimocks"
+  },
+  "dependencies": {
+    "angular": "~1.2.0",
+    "angular-mocks": "~1.2.0",
+    "angular-multimocks": "^0.6.1"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "lodash": "^4.0.0"
+  }
+}

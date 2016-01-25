@@ -1,0 +1,32 @@
+{
+    "preset": "node-style-guide",
+    "requireCamelCaseOrUpperCaseIdentifiers": "ignoreProperties",
+    "disallowTrailingComma": true,
+    "disallowSpacesInFunction": null,
+    "disallowMultipleLineBreaks": true,
+    "requireCapitalizedComments": null,
+    "requireCapitalizedConstructors": true,
+    "requireParenthesesAroundIIFE": true,
+    "requireTrailingComma": null,
+    "requireSpaceAfterLineComment": null,
+    "disallowMultipleVarDecl": null,
+    "maximumLineLength": 80,
+    "requireSpaceAfterKeywords": [
+        "do",
+        "for",
+        "if",
+        "else",
+        "switch",
+        "case",
+        "try",
+        "catch",
+        "void",
+        "while",
+        "with",
+        "return",
+        "typeof",
+        "function"
+    ],
+    "requireLineBreakAfterVariableAssignment" : true,
+    "validateIndentation": 2
+}

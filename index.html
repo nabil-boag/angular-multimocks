@@ -10,20 +10,9 @@
     <link href="bower_components/bootstrap/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="bower_components/angular/angular.min.js"></script>
-    <script src="bower_components/angular-mocks/angular-mocks.js"></script>
-    <script src="bower_components/lodash/lodash.min.js"></script>
-    <script src="bower_components/angular-multimocks/app/package/js/angular-multimocks.js"></script>
+    <script src="node_modules/angular/angular.min.js"></script>
+    <script src="node_modules/angular-mocks/angular-mocks.js"></script>
+    <script src="node_modules/angular-multimocks/app/package/js/angular-multimocks.js"></script>
     <script src="mockOutput.js"></script>
 
     <style>
@@ -127,7 +116,7 @@
             <h1>Great Games</h1>
           </div>
           <div class="container">
-            <div ng-show="loading"  class="loader">Loading...</div>
+            <img src="http://cdnjs.cloudflare.com/ajax/libs/semantic-ui/0.16.1/images/loader-large.gif" ng-show="loading" class="center-block"/>
             <table ng-hide="loading" class="table table-striped">
               <thead>
                 <tr>
