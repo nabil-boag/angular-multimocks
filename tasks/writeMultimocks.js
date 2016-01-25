@@ -19,8 +19,8 @@ module.exports = function (grunt) {
   var mergeScenarios = function (parentScenario, childScenario) {
     var all = childScenario.concat(parentScenario);
 
-    // remove parent scenario resource which provide same resource as child
-    // scenario
+    // remove parent scenario resource which provides the same
+    // resource as child scenario
     return _.uniq(all, function (resource) {
       return resource.uri + resource.httpMethod;
     });
