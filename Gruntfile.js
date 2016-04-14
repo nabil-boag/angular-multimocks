@@ -32,7 +32,8 @@ module.exports = function (grunt) {
   grunt.registerTask('package', [
     'clean:package',
     'concat:package',
-    'uglify:package'
+    'uglify:package',
+    'copy:tasks'
   ]);
   grunt.registerTask('workflow:dev', [
     'connect:dev',
@@ -104,6 +105,16 @@ module.exports = function (grunt) {
             expand: true,
             src: ['package.json'],
             dest: '<%= app.build_dir %>'
+          }
+        ]
+      },
+      tasks: {
+        files: [
+          {
+            expand: true,
+            cwd: 'tasks',
+            src: ['**'],
+            dest: '<%= app.package_dir %>/tasks'
           }
         ]
       }
