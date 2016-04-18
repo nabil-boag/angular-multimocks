@@ -1,17 +1,18 @@
 /* global require, module, process */
 
-module.exports = function (grunt) {
-  var _ = require('lodash'),
-    path = require('path'),
-    fs = require('fs');
+var _ = require('lodash'),
+  path = require('path'),
+  fs = require('fs'),
+  pluginRegistry = require('./plugins'),
+  writefile = require('writefile');
 
-  var pluginRegistry = require('./plugins');
+var pwd = path.dirname(module.filename),
+  singleFileDefaultTemplate = path.join(pwd, 'multimocks.tpl'),
+  multipleFilesDefaultTemplate = path.join(pwd,
+      'multimocksMultipleFiles.tpl'),
+  mockManifestFilename = 'mockResources.json';
 
-  var pwd = path.dirname(module.filename),
-    singleFileDefaultTemplate = path.join(pwd, 'multimocks.tpl'),
-    multipleFilesDefaultTemplate = path.join(pwd,
-        'multimocksMultipleFiles.tpl'),
-    mockManifestFilename = 'mockResources.json';
+module.exports = function (logger, config) {
 
   /**
    * Merge 2 scenarios together.
@@ -75,25 +76,20 @@ module.exports = function (grunt) {
   };
 
   /**
-   * Executes each of the plugins configured in the application Gruntfile.js to
+   * Executes each of the plugins configured in the application to
    * decorate responses.
    *
    * @param  {object} data
-   * @param  {array} pluginNames
+   * @param  {array} plugins
    * @return {object} decoratedData
    */
   var runPlugins = function (data, pluginNames) {
-    grunt.verbose.writeln('runPlugins input', data);
-    var plugins = pluginNames.map(function (pn) {
-        return pluginRegistry[pn];
-      }),
-      applyPlugin = function (oldData, plugin) {
-        return plugin(oldData);
-      };
-
+    logger('runPlugins input', data);
+    var plugins = pluginNames.map(function (pn) { return pluginRegistry[pn]; }),
+      applyPlugin = function (oldData, plugin) { return plugin(oldData); };
     // Use reduce to apply all the plugins to the data
     var output = plugins.reduce(applyPlugin, data);
-    grunt.verbose.writeln('runPlugins output', output);
+    logger('runPlugins output', output);
     return output;
   };
 
@@ -119,7 +115,7 @@ module.exports = function (grunt) {
   var readScenarioData = function (config, mockSrc) {
     var dataWithContext = readMockManifest(config, mockSrc);
 
-    grunt.verbose.writeln('readScenarioData config', config);
+    // log('readScenarioData config', config);
     if (config.plugins) {
       dataWithContext = runPlugins(dataWithContext, config.plugins);
     }
@@ -128,9 +124,9 @@ module.exports = function (grunt) {
   };
 
   /**
-   * Saves the specified file to file system.
+   * Save the file
    *
-   * @param {string} templatePath
+   * @param {string} template
    * @param {string} path
    * @param {string} data
    * @param {string} name
@@ -145,7 +141,7 @@ module.exports = function (grunt) {
     var output = _.template(templateString)(templateData);
 
     // write file
-    fs.writeFileSync(path, output);
+    writefile(path, output);
   };
 
   /**
@@ -153,58 +149,52 @@ module.exports = function (grunt) {
    * inclusion into an Angular app.
    */
   var writeScenarioData = function () {
-    this.files.forEach(function (taskConfig) {
-      taskConfig.multipleFiles = taskConfig.multipleFiles || false;
+    config.multipleFiles = config.multipleFiles || false;
 
-      var defaultTemplate = singleFileDefaultTemplate;
-      if (taskConfig.multipleFiles) {
-        defaultTemplate = multipleFilesDefaultTemplate;
-      }
-      taskConfig.template = taskConfig.template || defaultTemplate;
+    var defaultTemplate = singleFileDefaultTemplate;
+    if (config.multipleFiles) {
+      defaultTemplate = multipleFilesDefaultTemplate;
+    }
+    config.template = config.template || defaultTemplate;
 
-      var mockSrc = taskConfig.src[0];
+    var mockSrc = _.isArray(config.src) ? _.first(config.src) : config.src;
+    logger('mock source', mockSrc);
+    logger('dest', config.dest);
+    logger('template', config.template);
+    logger('multipleFiles', config.multipleFiles);
+    logger('plugins', config.plugins);
 
-      grunt.verbose.writeln('mockSrc', mockSrc);
-      grunt.verbose.writeln('dest', taskConfig.dest);
-      grunt.verbose.writeln('template', taskConfig.template);
-      grunt.verbose.writeln('multipleFiles', taskConfig.multipleFiles);
-      grunt.verbose.writeln('plugins', taskConfig.plugins);
+    // read all scenario data from manifest/JSON files
+    var scenarioData = readScenarioData(config, mockSrc);
 
-      // read all scenario data from manifest/JSON files
-      var scenarioData = readScenarioData(taskConfig, mockSrc);
+    logger('scenarioData', scenarioData);
 
-      grunt.verbose.writeln('scenarioData', scenarioData);
+    var scenarioModuleFilename = config.dest,
+      scenarioString;
 
-      var scenarioModuleFilename = taskConfig.dest,
-        scenarioString;
+    if (!config.multipleFiles) {
+      // stringify all scenario files into a single Angular module
+      scenarioString = JSON.stringify(scenarioData);
+      writeScenarioModule(config.template, scenarioModuleFilename,
+        scenarioString);
+    } else {
+      fs.mkdirSync(config.dest);
 
-      if (!taskConfig.multipleFiles) {
-        // stringify all scenario files into a single Angular module
-        scenarioString = JSON.stringify(scenarioData);
-        writeScenarioModule(taskConfig.template, scenarioModuleFilename,
-          scenarioString);
-      } else {
-        fs.mkdirSync(taskConfig.dest);
+      // stringify each scenario file into it's own Angular module
+      for (var scenarioName in scenarioData) {
+        if (scenarioData.hasOwnProperty(scenarioName)) {
+          scenarioModuleFilename = config.dest + '/' + scenarioName +
+            '.js';
 
-        // stringify each scenario file into it's own Angular module
-        for (var scenarioName in scenarioData) {
-          if (scenarioData.hasOwnProperty(scenarioName)) {
-            scenarioModuleFilename = taskConfig.dest + '/' + scenarioName +
-              '.js';
-
-            scenarioString = JSON.stringify(scenarioData[scenarioName]);
-            writeScenarioModule(taskConfig.template, scenarioModuleFilename,
-              scenarioString, scenarioName);
-          }
+          scenarioString = JSON.stringify(scenarioData[scenarioName]);
+          writeScenarioModule(config.template, scenarioModuleFilename,
+            scenarioString, scenarioName);
         }
       }
-    });
+    }
   };
 
-  /**
-   * Register Grunt task to compile mock resources into scenario data file.
-   */
-  grunt.registerMultiTask('multimocks',
-      'Generate Angular Multimocks scenario module',
-      writeScenarioData);
+  return {
+    writeScenarioData: writeScenarioData
+  };
 };

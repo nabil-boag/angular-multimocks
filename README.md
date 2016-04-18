@@ -1,12 +1,10 @@
-Angular Multimocks
-==================
+# Angular Multimocks
 
-Travis Status
--------------
+
+## Travis Status
 [![Build Status](https://travis-ci.org/wongatech/angular-multimocks.svg?branch=master)](https://travis-ci.org/wongatech/angular-multimocks)
 
-Demo
-----
+## Demo
 <http://tech.wonga.com/angular-multimocks/>
 
 Angular Multimocks lets you test how your app behaves with different responses
@@ -26,8 +24,7 @@ You can use Angular Multimocks to quickly test your app works in all situations
 while developing or to provide mock data for a suite of automated acceptance
 tests.
 
-Example Use Case
-----------------
+## Example Use Case
 
 You have an application which calls to `http://example.com/cart` to get a list
 of items in the customer's shopping cart. You'd like to be able to easily
@@ -40,17 +37,14 @@ cases. You may want responses for the following:
 | Shopping cart with a quick buy option | `/cart?scenario=quickBuyCart`   |
 | Shopping cart with out of stock items | `/cart?scenario=outOfStockCart` |
 
-Demo App
---------
+## Demo App
 
 See `app/src/demo/` for a demo app. Inside the demo app, run `grunt` to generate the
 mocks, then open `index.html` in your browser.
 
-Usage
------
+## Usage
 
-NPM
------
+### NPM
 
 ```sh
 npm install --save angular-multimocks
@@ -63,8 +57,7 @@ application:
 <script src="node_modules/angular-multimocks/app/package/js/angular-multimocks.min.js"></script>
 ```
 
-Dependencies
-------------
+### Dependencies
 
 Angular Multimocks depends on Angular Mocks so include it in your application. For example:
 
@@ -80,8 +73,7 @@ angular
   // more code here...
 ```
 
-Mock Format
------------
+## Mock Format
 
 Resource files look like this:
 
@@ -146,18 +138,20 @@ the query string.
 global_delay=0
 ```
 
-Grunt Task
-----------
+## Generating Mocks
 
-Angular Multimocks defines a Grunt task called `multimocks`, which will compile
-resources into an AngularJS module definition. Add the Grunt task to your build
-and make the module a depedency in your app to enable scenarios.
+Angular Multimocks privides `Grunt` and `Gulp` tasks that will compile resources
+into an AngularJS module definition.
+Adding these tasks to your build process will help to generate mocks after making
+changes.
 
 Install the module using npm:
 
 ```sh
 npm install --save-dev angular-multimocks
 ```
+
+### Grunt task
 
 Add it to your Grunt configuration:
 
@@ -178,8 +172,24 @@ grunt.initConfig({
 });
 ```
 
-Once the task is run, `build/multimocks.js` will be generated containing all your
-mock data. Include that in your app:
+### Gulp task
+
+```javascript
+// Load the gulp task
+var multimocksGulp = require('angular-multimocks/app/package/tasks/gulp/multimocksGulp');
+
+// Define multimocks
+gulp.task('multimocks', function () {
+  // Call the multimocks gulp task with apropriate configuration
+  multimocksGulp({
+    src: 'mocks',
+    dest: 'mocks/multimocks.js'
+  });
+});
+```
+
+Once either the Gulp or Grunt task is run, `build/multimocks.js` will be generated
+containing all your mock data. Include that in your app:
 
 ```html
 <script src="build/multimocks.js"></script>
@@ -218,9 +228,15 @@ the generated files in your app:
 <script src="build/scenarios/foo.js"></script>
 <script src="build/scenarios/bar.js"></script>
 ```
+### Task options
 
-HAL Plugin
-----------
+* `src` - The directory to load mock files from (required)
+* `dest` - The desination file/directory to output compiled mocks (required)
+* `multipleFiles` - Generates one file per resurce type (default: false)
+* `template` - The template to use when generating mocks
+* `verbose` - The logging level to use when running the generate task
+
+## HAL Plugin
 
 If your API conforms to [HAL](http://stateless.co/hal_specification.html),
 Angular Multimocks can generate links for you to speed development.
@@ -285,8 +301,7 @@ known resources declared as available links:
 A `uri` will be generated for each resource. This value is used for the `href`
 field of each object in `_links`.
 
-`multimocksDataProvider`
-------------------------
+## `multimocksDataProvider`
 
 Angular Multimocks also declares a provider, `multimocksDataProvider`, which
 allows you to set mock data by passing an object to the `setMockData` method.
@@ -303,8 +318,7 @@ specify that the content type is HAL JSON.
 }]);
 ```
 
-Contributing
-------------
+## Contributing
 
 We :heart: pull requests!
 
