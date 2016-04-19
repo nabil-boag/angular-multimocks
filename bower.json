@@ -1,0 +1,23 @@
+{
+  "name": "angular-multimocks",
+  "version": "0.6.4",
+  "authors": [
+    {
+      "name": "Nabil Boag",
+      "email": "nabil.boag@wonga.com"
+    }
+  ],
+  "description": "Tools for managing mock data scenarios in AngularJS applications",
+  "main": "app/package/js/angular-multimocks.min.js",
+  "dependencies": {},
+  "ignore": [
+    "app/src",
+    "tasks",
+    ".*",
+    "Gruntfile.js",
+    "karma-unit.conf.js",
+    "package.json",
+    "LICENSE",
+    "README.md"
+  ]
+}
