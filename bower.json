@@ -4,7 +4,7 @@
   "authors": [
     {
       "name": "Nabil Boag",
-      "email": "nabil,boag@wonga.com"
+      "email": "nabil.boag@wonga.com"
     }
   ],
   "description": "Tools for managing mock data scenarios in AngularJS applications",
