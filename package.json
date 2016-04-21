@@ -1,6 +1,6 @@
 {
   "name": "angular-multimocks",
-  "version": "0.6.7",
+  "version": "0.6.8",
   "description": "Tools for managing mock data scenarios in AngularJS applications",
   "repository": {
     "type": "git",
@@ -10,7 +10,7 @@
     "test": "grunt build test"
   },
   "files": [
-    "app/package/js",
+    "app/package",
     "tasks"
   ],
   "dependencies": {
