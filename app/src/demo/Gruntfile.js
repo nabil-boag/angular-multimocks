@@ -13,9 +13,6 @@ module.exports = function (grunt) {
         src: 'mockData',
         dest: 'mockOutput.js',
         multipleFiles: false
-
-        // optionally apply plugins
-        // plugins: ['hal'], // (hal plugin will change uris and break demo)
       }
     }
   });
