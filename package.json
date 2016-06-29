@@ -8,7 +8,7 @@
   "dependencies": {
     "angular": "~1.2.0",
     "angular-mocks": "~1.2.0",
-    "angular-multimocks": "^0.6.1"
+    "angular-multimocks": "^0.6.10"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
