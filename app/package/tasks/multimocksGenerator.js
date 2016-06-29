@@ -4,7 +4,8 @@ var _ = require('lodash'),
   path = require('path'),
   fs = require('fs'),
   pluginRegistry = require('./plugins'),
-  writefile = require('writefile');
+  mkdirp = require('mkdirp'),
+  getDirName = path.dirname;
 
 var pwd = path.dirname(module.filename),
   singleFileDefaultTemplate = path.join(pwd, 'multimocks.tpl'),
@@ -140,8 +141,8 @@ module.exports = function (logger, config) {
 
     var output = _.template(templateString)(templateData);
 
-    // write file
-    writefile(path, output);
+    mkdirp.sync(getDirName(path));
+    fs.writeFileSync(path, output);
   };
 
   /**
