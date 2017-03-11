@@ -140,7 +140,7 @@ global_delay=0
 
 ## Generating Mocks
 
-Angular Multimocks privides `Grunt` and `Gulp` tasks that will compile resources
+Angular Multimocks provides `Grunt` and `Gulp` tasks that will compile resources
 into an AngularJS module definition.
 Adding these tasks to your build process will help to generate mocks after making
 changes.
@@ -231,8 +231,8 @@ the generated files in your app:
 ### Task options
 
 * `src` - The directory to load mock files from (required)
-* `dest` - The desination file/directory to output compiled mocks (required)
-* `multipleFiles` - Generates one file per resurce type (default: false)
+* `dest` - The destination file/directory to output compiled mocks (required)
+* `multipleFiles` - Generates one file per resource type (default: false)
 * `template` - The template to use when generating mocks
 * `verbose` - The logging level to use when running the generate task
 
@@ -326,8 +326,8 @@ To contribute:
 
 - Fork the repo
 - Run `npm install`
-- Run `grunt workflow:dev` to watch for changes, lint, build and run tests as
+- Run `grunt workflow:dev` or `npm run dev` to watch for changes, lint, build and run tests as
   you're working
 - Write your unit tests for your change
 - Test with the demo app
-- Run `grunt package` to update the distribution files
+- Run `grunt package` or `npm run package` to update the distribution files
