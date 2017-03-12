@@ -2,10 +2,38 @@
 
 describe('multimocks', function () {
   var mockHttpBackend, mockWindow, multimocksDataProvider, multimocksData,
-    multimocks, scenario1, scenario2, pollScenario, delayedResponseScenario,
-    scenarios, mockHeaders, mockUriRegExp, regexScenario;
+    multimocks, scenario1, scenario2, defaultScenario, pollScenario,
+    delayedResponseScenario, scenarios, mockHeaders, mockUriRegExp,
+    regexScenario;
 
   beforeEach(function () {
+    defaultScenario = [
+      {
+        uri: '/test',
+        httpMethod: 'GET',
+        statusCode: 200,
+        response: {
+          scenario: 'default'
+        }
+      },
+      {
+        uri: '/test',
+        httpMethod: 'POST',
+        statusCode: 200,
+        response: {
+          scenario: 'default'
+        }
+      },
+      {
+        uri: '/test-two',
+        httpMethod: 'POST',
+        statusCode: 200,
+        response: {
+          scenario: 'default'
+        }
+      }
+    ];
+
     scenario1 = [
       {
         uri: '/test',
@@ -195,7 +223,7 @@ describe('multimocks', function () {
     });
 
     it('should register a function to generate responses for mocks with ' +
-       'polling', function () {
+      'polling', function () {
       // arrange
       setupMultimocks({scenario2: pollScenario});
 
@@ -258,11 +286,13 @@ describe('multimocks', function () {
       $log,
       multimocksLocation;
 
-    beforeEach(function () {
+    function setupModule(mockData, defaultScenarioName) {
       module('scenario', function ($provide) {
         $provide.value('multimocksData', {
-          getMockData: jasmine.createSpy().and.returnValue(scenarios),
+          getMockData: jasmine.createSpy()
+            .and.returnValue(mockData),
           getDefaultScenario: jasmine.createSpy()
+            .and.returnValue(defaultScenarioName)
         });
         $provide.value('$log', {
           error: jasmine.createSpy()
@@ -279,160 +309,203 @@ describe('multimocks', function () {
       });
 
       inject(function (_scenarioMocks_, _$log_, _multimocksData_,
-        _currentScenario_, _multimocksLocation_) {
+                       _currentScenario_, _multimocksLocation_) {
         scenarioMocks = _scenarioMocks_;
         multimocksData = _multimocksData_;
         currentScenario = _currentScenario_;
         $log = _$log_;
         multimocksLocation = _multimocksLocation_;
       });
-    });
+    }
 
-    describe('getMocks', function () {
-      it('should return mocks for a valid scenario', function () {
-        // Act
-        var mocks = scenarioMocks.getMocks('scenario1');
-
-        // Assert
-        expect(mocks).toBe(scenario1);
-      });
-
-      it('should return undefined for a scenario that doesn\'t exist',
+    describe('with default scenario', function () {
+      it('should return mocks for a valid scenario with merged default data',
         function () {
+          setupModule({
+            defaultScenario: defaultScenario,
+            scenario1: scenario1,
+            scenario2: scenario2
+          }, 'defaultScenario');
+
+          var expectedScenario = [].concat(scenario1).concat([
+            {
+              uri: '/test',
+              httpMethod: 'POST',
+              statusCode: 200,
+              response: {
+                scenario: 'default'
+              }
+            },
+            {
+              uri: '/test-two',
+              httpMethod: 'POST',
+              statusCode: 200,
+              response: {
+                scenario: 'default'
+              }
+            }
+          ]);
           // Act
-          var mocks = scenarioMocks.getMocks('badScenario');
+          var mocks = scenarioMocks.getMocks('scenario1');
 
           // Assert
-          expect(mocks).toBe(undefined);
+          expect(mocks).toEqual(expectedScenario);
         });
+    });
+    describe('no default scenario', function () {
 
-      it('should log when no mocks can be found for a specified scenario',
-        function () {
+      beforeEach(function () {
+        setupModule(scenarios);
+      });
+
+      describe('getMocks', function () {
+        it('should return mocks for a valid scenario', function () {
           // Act
-          scenarioMocks.getMocks('notFoundScenario');
+          var mocks = scenarioMocks.getMocks('scenario1');
 
           // Assert
-          expect($log.error).toHaveBeenCalledWith(
-            'Mocks not found for scenario: notFoundScenario');
+          expect(mocks).toEqual(scenario1);
         });
-    });
 
-    describe('getMocksForCurrentScenario', function () {
-      it('should get mocks for the current scenario', function () {
-        // Arrange
-        scenarioMocks.getMocks = jasmine.createSpy().and
-          .returnValue({data: 'value'});
-        currentScenario.getName.and.returnValue('scenario3');
+        it('should return undefined for a scenario that doesn\'t exist',
+          function () {
+            // Act
+            var mocks = scenarioMocks.getMocks('badScenario');
 
-        // Act
-        var mocks = scenarioMocks.getMocksForCurrentScenario();
+            // Assert
+            expect(mocks).toBe(undefined);
+          });
 
-        // Assert
-        expect(scenarioMocks.getMocks).toHaveBeenCalledWith('scenario3');
-        expect(mocks).toEqual({data: 'value'});
-      });
-    });
+        it('should log when no mocks can be found for a specified scenario',
+          function () {
+            // Act
+            scenarioMocks.getMocks('notFoundScenario');
 
-    describe('getDelayForResponse', function () {
-      it('should return 0 when a mock isn\'t set for a response', function () {
-        // Arrange
-        scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
-          .and.returnValue(delayedResponseScenario);
-        currentScenario.getName.and.returnValue('scenario3');
-        var mockedResponse = {
-          config: {
-            method: 'UNKNOWN',
-            url: '/different/path'
-          }
-        };
-
-        // Act
-        var delay = scenarioMocks.getDelayForResponse(mockedResponse);
-
-        // Assert
-        expect(delay).toEqual(0);
+            // Assert
+            expect($log.error).toHaveBeenCalledWith(
+              'Mocks not found for scenario: notFoundScenario');
+          });
       });
 
-      it('should return 0 when a mock without a delay is set for a response',
-        function () {
+      describe('getMocksForCurrentScenario', function () {
+        it('should get mocks for the current scenario', function () {
           // Arrange
-          scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
-            .and.returnValue(scenario1);
+          scenarioMocks.getMocks = jasmine.createSpy().and
+            .returnValue({data: 'value'});
           currentScenario.getName.and.returnValue('scenario3');
-          var mockedResponse = {
-            config: {
-              method: 'GET',
-              url: '/test'
-            }
-          };
 
           // Act
-          var delay = scenarioMocks.getDelayForResponse(mockedResponse);
+          var mocks = scenarioMocks.getMocksForCurrentScenario();
 
           // Assert
-          expect(delay).toEqual(0);
+          expect(scenarioMocks.getMocks).toHaveBeenCalledWith('scenario3');
+          expect(mocks).toEqual({data: 'value'});
         });
+      });
 
-      it('should return delay when a mock with a delay is set for a response',
-        function () {
-          // Arrange
-          scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
-            .and.returnValue(delayedResponseScenario);
-          currentScenario.getName.and.returnValue('delayedResponseScenario');
-          var mockedResponse = {
-            config: {
-              method: 'GET',
-              url: '/delayed'
-            }
-          };
+      describe('getDelayForResponse', function () {
+        it('should return 0 when a mock isn\'t set for a response',
+          function () {
+            // Arrange
+            scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
+              .and.returnValue(delayedResponseScenario);
+            currentScenario.getName.and.returnValue('scenario3');
+            var mockedResponse = {
+              config: {
+                method: 'UNKNOWN',
+                url: '/different/path'
+              }
+            };
 
-          // Act
-          var delay = scenarioMocks.getDelayForResponse(mockedResponse);
+            // Act
+            var delay = scenarioMocks.getDelayForResponse(mockedResponse);
 
-          // Assert
-          expect(delay).toBe(9876);
-        });
+            // Assert
+            expect(delay).toEqual(0);
+          });
 
-      it('should return delay for a mock that has a regex for URL',
-        function () {
-          // Arrange
-          scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
-            .and.returnValue(regexScenario);
-          currentScenario.getName.and.returnValue('regexScenario');
-          var mockedResponse = {
-            config: {
-              method: 'GET',
-              url: '/test/123/foo'
-            }
-          };
+        it('should return 0 when a mock without a delay is set for a response',
+          function () {
+            // Arrange
+            scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
+              .and.returnValue(scenario1);
+            currentScenario.getName.and.returnValue('scenario3');
+            var mockedResponse = {
+              config: {
+                method: 'GET',
+                url: '/test'
+              }
+            };
 
-          // Act
-          var delay = scenarioMocks.getDelayForResponse(mockedResponse);
+            // Act
+            var delay = scenarioMocks.getDelayForResponse(mockedResponse);
 
-          // Assert
-          expect(delay).toBe(345);
-        });
+            // Assert
+            expect(delay).toEqual(0);
+          });
 
-      it('should return overridden global delay when specified in url',
-        function () {
-          // Arrange
-          multimocksLocation.getQueryStringValuesByKey.and.returnValue(['123']);
-          scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
-            .and.returnValue(delayedResponseScenario);
-          currentScenario.getName.and.returnValue('delayedResponseScenario');
-          var mockedResponse = {
-            config: {
-              method: 'GET',
-              url: '/delayed'
-            }
-          };
+        it('should return delay when a mock with a delay is set for a response',
+          function () {
+            // Arrange
+            scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
+              .and.returnValue(delayedResponseScenario);
+            currentScenario.getName.and.returnValue('delayedResponseScenario');
+            var mockedResponse = {
+              config: {
+                method: 'GET',
+                url: '/delayed'
+              }
+            };
 
-          // Act
-          var delay = scenarioMocks.getDelayForResponse(mockedResponse);
+            // Act
+            var delay = scenarioMocks.getDelayForResponse(mockedResponse);
 
-          // Assert
-          expect(delay).toBe(123);
-        });
+            // Assert
+            expect(delay).toBe(9876);
+          });
+
+        it('should return delay for a mock that has a regex for URL',
+          function () {
+            // Arrange
+            scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
+              .and.returnValue(regexScenario);
+            currentScenario.getName.and.returnValue('regexScenario');
+            var mockedResponse = {
+              config: {
+                method: 'GET',
+                url: '/test/123/foo'
+              }
+            };
+
+            // Act
+            var delay = scenarioMocks.getDelayForResponse(mockedResponse);
+
+            // Assert
+            expect(delay).toBe(345);
+          });
+
+        it('should return overridden global delay when specified in url',
+          function () {
+            // Arrange
+            multimocksLocation.getQueryStringValuesByKey
+              .and.returnValue(['123']);
+            scenarioMocks.getMocksForCurrentScenario = jasmine.createSpy()
+              .and.returnValue(delayedResponseScenario);
+            currentScenario.getName.and.returnValue('delayedResponseScenario');
+            var mockedResponse = {
+              config: {
+                method: 'GET',
+                url: '/delayed'
+              }
+            };
+
+            // Act
+            var delay = scenarioMocks.getDelayForResponse(mockedResponse);
+
+            // Assert
+            expect(delay).toBe(123);
+          });
+      });
     });
   });
 
@@ -475,7 +548,7 @@ describe('multimocks', function () {
         var result = multimocksLocation.getQueryStringValuesByKey('foo');
 
         // Assert
-        expect(result).toEqual(['1','2']);
+        expect(result).toEqual(['1', '2']);
       });
 
       it('should return results for URL encoded values', function () {

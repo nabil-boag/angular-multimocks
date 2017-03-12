@@ -55,7 +55,7 @@ angular
         // Mock a polling resource.
         if (mock.poll) {
           var pollCounter = 0,
-              pollCount = mock.pollCount !== undefined ? mock.pollCount : 2;
+            pollCount = mock.pollCount !== undefined ? mock.pollCount : 2;
 
           // Respond with a 204 which will then get polled until a 200 is
           // returned.
@@ -145,10 +145,40 @@ angular
         return pattern.test(url);
       }
 
-      var scenarioMocks =  {
+      function mergeScenarios(chosenScenario, defaultScenario) {
+        var scenarioData = [].concat(chosenScenario);
+
+        if (defaultScenario) {
+          defaultScenario.forEach(function (scenario) {
+            var isAlreadySet = false;
+            var defaultUrl = scenario.uri + scenario.httpMethod;
+            for (var i = 0; i < chosenScenario.length; i++) {
+              var response = chosenScenario[i];
+              var responseUrl = response.uri + response.httpMethod;
+              isAlreadySet = responseUrl === defaultUrl;
+              if (isAlreadySet) {
+                break;
+              }
+            }
+            if (!isAlreadySet) {
+              scenarioData.push(scenario);
+            }
+          });
+        }
+        return scenarioData;
+      }
+
+      var scenarioMocks = {
         getMocks: function (scenarioToLoad) {
+          var defaultScenario = mockData[multimocksData.getDefaultScenario()];
+
+          if (scenarioToLoad === multimocksData.getDefaultScenario()) {
+            return defaultScenario;
+          }
+
           if (mockData[scenarioToLoad] !== undefined) {
-            return mockData[scenarioToLoad];
+            var chosenScenario = mockData[scenarioToLoad];
+            return mergeScenarios(chosenScenario, defaultScenario);
           }
 
           if (scenarioToLoad) {
@@ -217,7 +247,7 @@ angular
               k = s[0],
               v = s[1] && decodeURIComponent(s[1]);
 
-            if (queryDictionary[k ]) {
+            if (queryDictionary[k]) {
               queryDictionary[k].push(v);
             } else {
               queryDictionary[k] = [v];

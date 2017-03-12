@@ -16,19 +16,6 @@ var pwd = path.dirname(module.filename),
 module.exports = function (logger, config) {
 
   /**
-   * Merge 2 scenarios together.
-   */
-  var mergeScenarios = function (parentScenario, childScenario) {
-    var all = childScenario.concat(parentScenario);
-
-    // remove parent scenario resource which provide same resource as child
-    // scenario
-    return _.uniq(all, function (resource) {
-      return resource.uri + resource.httpMethod;
-    });
-  };
-
-  /**
    * Read a scenario from a list of resource files, add URIs and merge in
    * resources from default scenario.
    */
@@ -45,12 +32,7 @@ module.exports = function (logger, config) {
       };
     });
 
-    // if not default scenario, merge in default resources
-    if (scenarioName === '_default') {
-      return scenario;
-    }
-
-    return mergeScenarios(defaultScenario, scenario);
+    return scenario;
   };
 
   /**
