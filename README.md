@@ -5,7 +5,7 @@
 [![Build Status](https://travis-ci.org/wongatech/angular-multimocks.svg?branch=master)](https://travis-ci.org/wongatech/angular-multimocks)
 
 ## Demo
-<http://tech.wonga.com/angular-multimocks/>
+<http://nabil-boag.github.io/angular-multimocks/>
 
 Angular Multimocks lets you test how your app behaves with different responses
 from an API.
