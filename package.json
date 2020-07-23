@@ -19,7 +19,7 @@
     "angular": "~1.2.0",
     "angular-mocks": "~1.2.0",
     "gulp-util": "~3.0.7",
-    "lodash": "^3.10.1",
+    "lodash": "^4.17.19",
     "mkdirp": "^0.5.1"
   },
   "devDependencies": {
