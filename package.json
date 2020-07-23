@@ -16,7 +16,7 @@
     "tasks"
   ],
   "dependencies": {
-    "angular": "~1.2.0",
+    "angular": "~1.8.0",
     "angular-mocks": "~1.2.0",
     "gulp-util": "~3.0.7",
     "lodash": "^3.10.1",
